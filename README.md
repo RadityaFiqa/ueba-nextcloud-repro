@@ -282,8 +282,9 @@ far more hijack sessions at the same false-alarm budget.
   to reproduce the results; `src/step05_model_A_landauer.py` gives the same TP/FP.
 - `src/check_v3_swap_equivalence.py` — check V3 (DuckDB = chunked pipeline); needs the output of `legacy/run_seed.sh`.
 - `tools/` — builds result tables (`results_table.py`) and fills the scenario workbook (`fill_workbook.py`).
-  `trace_session.py` traces one real K3 hijack session (seed 1) through models A, D, X4 and X5 and writes
-  every intermediate number to `results/trace_session.json` (used for the worked-example slides).
+  `trace_session.py` traces all 60 K3 hijack sessions of seed 1 through all 7 models (A, Hybrid, D, X4,
+  A-win, X4-win, X5) and writes every intermediate number to `results/trace_sessions.json` (used for the
+  worked-example slides and the interactive simulator); its per-intensity counts match `expected_results/`.
 - `expected_results/` — the original results from the thesis runs, for comparison.
 
 ## Reference
