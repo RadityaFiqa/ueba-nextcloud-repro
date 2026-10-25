@@ -1,7 +1,22 @@
-"""Model v2 library: features F1-F8, rolling global Isolation Forest, risk
+"""LIBRARY for the daily models (imported as `lib`).
+  Where each model lives:
+    features F1-F8 ............ compute_features()            (models C, D, X1-X4)
+    Set A (event-type counts) . design_matrix()               (models B, C, D)
+    Isolation Forest score a .. iforest_a()                   (B, C, D, X1-X4)
+    context flags k1-k5, c .... flags_c()                     (B+RS, D, X3, X4)
+    risk score R, history h ... risk()                        (B+RS, D, X3, X4)
+    relative Set A ............ relative_A()                  (X1-X4)
+    per-user calibration ...... calibrate_per_user()          (X2, X4)
+    other detectors ........... make_detector(), rolling_a()  (step 8 benchmark)
+    Landauer detector / hybrid  hybrid_detect()               (A with w=(1,0,0), Hybrid)
+    Landauer evaluation ....... evaluate(), metrics()         (all models)
+    uid swap at day level ..... seed_swaps(), relabel()       (Test 1)
+
+------------------------------------------------------------------------
+Model v2 library: features F1-F8, rolling global Isolation Forest, risk
 scoring (flags k1-k5, c, h, R) and Landauer-protocol evaluation.
 
-Implements pipeline/SPEC_model_v2_DRAFT.md (approved 2026-10-22).
+Implements docs/SPEC_model_v2.md (approved 2026-10-22).
 Implementation details not fixed by the spec:
   * hour-of-day uses 5-minute bins (F4 percentiles at 5-min resolution);
   * F8 peak uses fixed 10-minute bins (pairs of 5-min bins);
@@ -16,11 +31,18 @@ import duckdb
 import numpy as np
 from sklearn.ensemble import IsolationForest
 
-from pairs import load_users, select_pairs  # noqa: E402
+from lib_uid_swap import load_users, select_pairs  # noqa: E402
 
-NBIN = 288
+NBIN = 288   # 5-minute bins per day
+# Contextual features (all compare today with the user's own previous W active days):
+#   F1 volume (robust z of log events)      F5 active span (robust z)
+#   F2 action mix change (Jensen-Shannon)   F6 share of events in folders never used before
+#   F3 share of never-used action types     F7 extra share of sensitive actions (share, delete, ...)
+#   F4 share of events outside usual hours  F8 burst: busiest 10 minutes (robust z)
 FNAMES = ['F1_vol_z', 'F2_type_js', 'F3_new_type_share', 'F4_off_hours', 'F5_span_z',
           'F6_new_prefix_share', 'F7_sens_excess', 'F8_burst_z']
+# Context flags k1-k5 -> c = sum of weights of raised flags / 8 (used by B+RS, D, X3, X4):
+#   k1 volume spike, k2 behaviour shift, k3 off-hours, k4 new resources, k5 sensitive/burst
 FLAGS = {  # name: (weight, [(feature index, threshold), ...] OR-ed)
     'k1': (2, [(0, 3.0)]),
     'k2': (2, [(1, 0.5), (2, 0.2)]),
@@ -144,7 +166,7 @@ def compute_features(user_recs, W=30, M=5):
         n = len(recs)
         for i, r in enumerate(recs):
             f = np.full(8, np.nan)
-            if win:
+            if win:   # the user's first day has no history -> features stay NaN
                 lt = math.log1p(r.total)
                 f[0] = robust_z(lt, logtot, M)
                 f[1] = js_div(r.types, tsum)
@@ -189,7 +211,11 @@ def design_matrix(feat, colset):
 
 # ---------------------------------------------------------------- Isolation Forest
 def iforest_a(feat, X, schedule='rolling', T=60, step=7, first_after=7, random_state=0):
-    """a in [0,1]: percentile of anomaly among the training window's scores. NaN = no model yet."""
+    """a in [0,1]: percentile of anomaly among the training window's scores. NaN = no model yet.
+
+    Models B, C, D, X1-X4: ONE global Isolation Forest for all users, trained on the
+    previous T = 60 days and retrained every `step` = 7 days ('rolling'); 'static' trains
+    once (D1), 'daily' retrains every day (D2)."""
     d = feat['d']
     valid = ~feat['first']  # first days have no features
     a = np.full(len(d), np.nan)
@@ -307,7 +333,10 @@ def flags_c(F, thr_scale=None, drop_flags=()):
 
 
 def risk(feat, a, c, w=(0.6, 0.3, 0.1), lam=0.5):
-    """R = wa*a + wc*c + wh*h, h_t = lam*h_{t-1} + (1-lam)*R_{t-1} per user (active days)."""
+    """R = wa*a + wc*c + wh*h, h_t = lam*h_{t-1} + (1-lam)*R_{t-1} per user (active days).
+
+    Risk score of models B+RS, D, X3, X4. Locked values after tuning (P2, P3):
+    w = (0.5, 0.4, 0.1), lam = 0.3; alert when R >= 0.55 (D) or 0.60 (X4)."""
     wa, wc, wh = (x / sum(w) for x in w)
     uid, first = feat['uid'], feat['first']
     R = np.full(len(a), np.nan)

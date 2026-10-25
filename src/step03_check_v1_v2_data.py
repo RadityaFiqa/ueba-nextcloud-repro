@@ -1,4 +1,10 @@
-"""V1 (field coverage) and V2 (aggregation keeps every event) on events.parquet."""
+"""STEP 3 - DATA CHECK V1 (field coverage) and V2 (no event lost in aggregation).
+  Input : work/events.parquet
+  Output: results/v1_v2.json
+  Run   : python src/step03_check_v1_v2_data.py work/events.parquet results/v1_v2.json
+
+------------------------------------------------------------------------
+V1 (field coverage) and V2 (aggregation keeps every event) on events.parquet."""
 import json
 import sys
 

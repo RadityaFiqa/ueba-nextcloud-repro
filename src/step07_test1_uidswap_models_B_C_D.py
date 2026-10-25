@@ -1,4 +1,19 @@
-"""Run every scenario of Skenario_Pengujian.xlsx except K3 (approved 2026-10-22).
+"""STEP 7 - TEST 1 (uid swap, per day): proposed models and all scenarios of
+Skenario_Pengujian.xlsx except K3.
+  Models (keys in results.json):
+    E2_B       model B    : global Isolation Forest on 49 event-type counts (Set A)
+    E3_B+RS    model B+RS : B + risk scoring
+    E4_C       model C    : Isolation Forest on Set A + contextual features F1-F8
+    E5_D       model D    : C + risk score R = 0.5a + 0.4c + 0.1h   (proposed model)
+    E1_A       model A    : read from step 5's dump (not re-implemented here)
+    R1-R4 risk-score components, F1-F7 feature/flag ablations, D1-D3 retraining variants
+  Also: P1-P5 tuning (seeds 0+2), E6 McNemar + bootstrap, H1-H3, K1-K2, V5-V7.
+  Input : work/base, work/user_stats.json, work/A/seed1_t0.6.jsonl
+  Output: results/results.json, results/run_all.log
+  Run   : python -W ignore src/step07_test1_uidswap_models_B_C_D.py      (~70 min)
+
+------------------------------------------------------------------------
+Run every scenario of Skenario_Pengujian.xlsx except K3 (approved 2026-10-22).
 
 Protocol: single reported run = seed 1 (all 5,389 users). All parameters and
 thresholds are chosen on validation seeds 0 and 2 only (seed 1 is the test
@@ -19,7 +34,7 @@ import time
 import numpy as np
 from scipy.stats import binomtest
 
-import lib
+import lib_models as lib  # features F1-F8, models B/C/D/X4, Landauer detector, evaluator
 
 STATS = config.STATS
 OUT = config.RESULTS
@@ -248,7 +263,7 @@ mA = lib.metrics(fT['uid'], fT['d'], statA, decA, labT)
 sweep = {}
 for th in [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9]:
     out = os.path.join(config.WORK, 'A', f'sweep_t{th}')
-    subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'duck_seed.py'), '--parquet', config.PARQUET,
+    subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'step05_model_A_landauer.py'), '--parquet', config.PARQUET,
                     '--stats', STATS, '--outdir', out, '-s', '1', '-t', str(th)], check=True, capture_output=True)
     mm = json.load(open(f'{out}/metrics.json'))
     sweep[th] = {k: mm[k] for k in ('TP', 'FN', 'FP', 'TN', 'TPR', 'TPR_adj', 'FPR', 'R', 'Prec')}

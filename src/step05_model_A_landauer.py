@@ -1,7 +1,18 @@
-"""Baseline A (Landauer et al., 2022) for one seed on events.parquet, via DuckDB.
+"""STEP 5 - MODEL A: baseline of Landauer et al. (2022), uid-swap attack (Test 1).
+  What  : picks the uid-swap pairs (lib_uid_swap.py), swaps the uids from the switch time,
+          then runs Landauer's detect.py loop unchanged (section 3 below).
+  Input : work/events.parquet, work/user_stats.json
+  Output: OUTDIR/labels.txt, OUTDIR/metrics.json; with --dump the per user-day decisions
+          that steps 6-8 reuse as "model A".
+  Run   : python src/step05_model_A_landauer.py --parquet work/events.parquet
+              --stats work/user_stats.json --outdir work/A/seed1 -s 1 --dump work/A/seed1_t0.6.jsonl
+  Expect: seed 1 -> TP 13, FN 7, FP 3337, TN 69112, train 5289 (= Landauer's README), ~10 s
+
+------------------------------------------------------------------------
+Baseline A (Landauer et al., 2022) for one seed on events.parquet, via DuckDB.
 
 Exact reformulation of generate_test_file.py + detect.py:
-  * pairs/switch times: baseline/pairs.py (port of generate_test_file.py);
+  * pairs/switch times: lib_uid_swap.py (port of generate_test_file.py);
   * injection: SQL CASE on (uid, ts >= switch time) instead of rewriting JSON;
   * detect.py scores a user whenever the day of their next event differs
     from the previous one, i.e. on *runs* of consecutive same-day events in
@@ -23,7 +34,7 @@ import time
 import duckdb
 import pytz
 
-from pairs import DEFAULTS, load_users, select_pairs, write_labels  # noqa: E402
+from lib_uid_swap import DEFAULTS, load_users, select_pairs, write_labels  # noqa: E402
 
 ap = argparse.ArgumentParser()
 ap.add_argument('--parquet', required=True)
@@ -119,6 +130,17 @@ for uid, run, day, typ, cnt in rows:
     lst[-1][2][typ] = cnt
 
 # --- 3. detect.py scoring loop (body unchanged) -----------------------------
+# How model A decides, per user and per active day:
+#   * the user's model is a list `dists[uid]` of up to `queue` (30) past daily
+#     count vectors {event type: count};
+#   * distance of today to one known day = sum |today - known| / sum max(today, known)
+#     over all event types (0 = identical, 1 = no type in common);
+#   * a = the smallest distance to any known day (nearest neighbour);
+#   * a > threshold (0.6) -> "anomalous", otherwise "normal";
+#   * retraining mode: after an anomaly the next `anom_free_days` (r = 1) day(s) are
+#     "training" (not scored) and are added to the model, so the model learns the
+#     new behaviour.
+# Comments below explain the code; the code itself is Landauer's.
 anomalous_users = {}
 with open(labels_path) as f:
     for line in f:
@@ -128,10 +150,11 @@ with open(labels_path) as f:
 
 detected_dist = {}
 for uid, user_runs in runs.items():
-    wait_days = {uid: anom_free_days}
-    dists = {uid: []}
+    wait_days = {uid: anom_free_days}   # > 0 -> user is in training/retraining mode
+    dists = {uid: []}                   # the user's model: known daily count vectors
     for _, day, counts in user_runs[:-1]:   # the last run is never closed in detect.py
-        freq_day = {uid: counts}
+        freq_day = {uid: counts}            # today's count vector
+        # distance from today to every known day; keep the smallest (min_dist)
         last_active_day = {uid: day}
         min_dist = None
         min_known = None
@@ -143,6 +166,7 @@ for uid, user_runs in runs.items():
             duplicate_check.append(known)
             manh = 0
             limit = 0
+            # manh = sum |today - known|, limit = sum max(today, known); mode 1 uses raw counts
             for action_element in set(list(known.keys()) + list(freq_day[uid].keys())):
                 idf_fact = 1
                 norm_sum_known = 1
@@ -174,21 +198,26 @@ for uid, user_runs in runs.items():
         sample = (uid, last_active_day_date)
         if sample not in detected_dist:
             detected_dist[sample] = []
+        # status: is today scored ("detection") or a training day?
         if wait_days[uid] <= 0:
             detected_dist[sample].append("detection")
         else:
             detected_dist[sample].append("training")
+        # decision: alarm if even the most similar known day differs by more than the threshold
         if min_dist is not None and min_dist > threshold:
             detected_dist[sample].append("anomalous")
-            wait_days[uid] = anom_free_days
+            wait_days[uid] = anom_free_days         # enter retraining mode
         else:
             detected_dist[sample].append("normal")
             wait_days[uid] -= 1
             if fifo is False and min_known is not None:
+                # move the matched day to the end so it is dropped last (least recently used)
                 dists[uid].remove(min_known)
                 dists[uid].append(min_known)
+        # learn: add today to the model while in (re)training mode (or always with -u)
         if update is True or wait_days[uid] >= 0:
             dists[uid].append(freq_day[uid])
+        # keep at most `queue` known days: drop the oldest
         if queue != -1 and len(dists[uid]) > queue:
             dists[uid] = dists[uid][1:]
 

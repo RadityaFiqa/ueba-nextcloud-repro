@@ -1,4 +1,10 @@
-"""Convert CLUE-LDS (clue.zip) to Parquet with DuckDB, keeping file order.
+"""STEP 1 - DATA: convert the CLUE-LDS dataset to Parquet.
+  Input : data/clue.zip (Zenodo 7119953)
+  Output: work/events.parquet (50,522,931 events, column rn = original line order)
+  Run   : python src/step01_data_to_parquet.py --zip data/clue.zip --out work/events.parquet --work work
+
+------------------------------------------------------------------------
+Convert CLUE-LDS (clue.zip) to Parquet with DuckDB, keeping file order.
 
 Steps
   1. unzip clue.json to a temporary file (DuckDB cannot read .zip);

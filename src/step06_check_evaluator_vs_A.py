@@ -1,4 +1,10 @@
-"""Check lib.evaluate against Landauer: feed baseline A's own per-day decisions
+"""STEP 6 - CHECK V4: our evaluator (lib_models.evaluate) must reproduce model A exactly.
+  Input : work/base, work/user_stats.json, work/A/seed1_t0.6.jsonl, work/A/seed1/labels.txt
+  Output: stdout, ends with "EVALUATOR CHECK PASS"
+  Run   : python src/step06_check_evaluator_vs_A.py
+
+------------------------------------------------------------------------
+Check lib.evaluate against Landauer: feed baseline A's own per-day decisions
 (seed 1, theta 0.6) and require identical statuses and TP/FP/TN/FN/train.
 Also times load_base / relabel / compute_features."""
 import config  # data / work / results paths (see config.py)
@@ -8,7 +14,7 @@ import time
 
 import numpy as np
 
-import lib
+import lib_models as lib  # features F1-F8, models B/C/D/X4, Landauer detector, evaluator
 
 t = time.time()
 base, types = lib.load_base(config.BASE)

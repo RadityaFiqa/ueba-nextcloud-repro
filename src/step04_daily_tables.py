@@ -1,4 +1,12 @@
-"""Build the per-user-day base tables once from events.parquet (DuckDB).
+"""STEP 4 - DATA: per user-day tables used by every model except A
+(B, B+RS, C, D, X1-X4, hybrid) and by the K3 tests.
+Also defines SENSITIVE, the list of sensitive actions (feature F7, flag k5, K3 context).
+  Input : work/events.parquet
+  Output: work/base/{types,daystat,hist,prefix}.parquet
+  Run   : python src/step04_daily_tables.py work/events.parquet work/base
+
+------------------------------------------------------------------------
+Build the per-user-day base tables once from events.parquet (DuckDB).
 
 Everything the models need is additive per (uid, day), so a seed's uid swap
 (which always switches at UTC midnight) is an exact day-level relabel of

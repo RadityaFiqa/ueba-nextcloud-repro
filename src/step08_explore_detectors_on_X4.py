@@ -1,6 +1,12 @@
-"""Exploratory (post-hoc) benchmark: which anomaly detector works best in the X4 setup?
+"""STEP 8 - EXPLORATION (post-hoc), uid swap: X4 with other detectors
+(Isolation Forest, ECOD, COPOD, HBOS, LOF).
+  Output: results/bench_detectors.json
+  Run   : python -W ignore src/step08_explore_detectors_on_X4.py
 
-X4 setup (explore_rel.py): relative Set A + F1-F8 (57 columns), one global model per
+------------------------------------------------------------------------
+Exploratory (post-hoc) benchmark: which anomaly detector works best in the X4 setup?
+
+X4 setup (step08_explore_model_X4_relative.py): relative Set A + F1-F8 (57 columns), one global model per
 60-day window retrained every 7 days, per-user calibration of the score (mid-rank among
 the user's previous 30 scored days), risk scoring R = 0.5a + 0.4c + 0.1h (lambda 0.3).
 Only the detector changes: IF (lib.iforest_a, identical to X4), ECOD, COPOD, HBOS, LOF
@@ -15,7 +21,7 @@ import time
 import numpy as np
 from scipy.stats import binomtest
 
-import lib
+import lib_models as lib  # features F1-F8, models B/C/D/X4, Landauer detector, evaluator
 
 STATS = config.STATS
 VAL, TEST = [0, 2], 1

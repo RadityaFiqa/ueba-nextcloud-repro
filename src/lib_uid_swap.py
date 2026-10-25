@@ -1,6 +1,9 @@
-"""uid-swap pair selection, line-for-line port of clue-lds generate_test_file.py.
+"""LIBRARY: uid-swap attack of Landauer (Test 1): picks 10 user pairs and a switch time.
 
-Shared by inject_split.py (streaming pipeline) and duck/duck_seed.py (DuckDB
+------------------------------------------------------------------------
+uid-swap pair selection, line-for-line port of clue-lds generate_test_file.py.
+
+Shared by legacy/inject_split.py (streaming pipeline) and step05_model_A_landauer.py (DuckDB
 pipeline) so both select exactly the same pairs and switch times.
 Changes vs. the original are mechanical only: similarities are computed on
 demand (same formula and rounding as get_user_similarity.py) and

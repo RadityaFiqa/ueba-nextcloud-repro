@@ -1,4 +1,9 @@
-"""K3 (M7 session hijack) attack generator, as fixed in pipeline/SPEC_K3_window_DRAFT.md
+"""LIBRARY: K3 session-hijack attack generator (Tests 2, 3, 3b).
+  plan_attacks()  : 20 victims, attack day, start time and duration per seed
+  attack_events() : the injected events for one victim and one intensity
+
+------------------------------------------------------------------------
+K3 (M7 session hijack) attack generator, as fixed in docs/SPEC_K3_window.md
 (approved 2026-10-24, before any K3 result).
 
 Per seed: 20 victims drawn at random from the 174 users meeting Landauer's victim rules

@@ -43,34 +43,45 @@ To start from a given step (e.g. after steps 1–6 are done): `PY=.venv/bin/pyth
 | Step | Script | What it does | Output |
 |---|---|---|---|
 | 0 | (wget + md5sum) | download and verify the dataset | `data/clue.zip` |
-| 1 | `src/to_parquet.py` | zip → Parquet; column `rn` keeps the original line order | `work/events.parquet` |
-| 2 | `src/user_stats.py` | per-user statistics used to pick the swap pairs | `work/user_stats.json` |
-| 3 | `src/v1_v2.py`, `src/ip_geo_coverage.py` | data checks V1–V2, IP/geolocation coverage | `results/v1_v2.json`, `results/ip_geo_coverage.json` |
-| 4 | `src/base_daily.py` | per user-day tables for the models | `work/base/` |
-| 5 | `src/duck_seed.py`, `src/summarize_seeds.py` | baseline A (Landauer), seed 1 plus seeds 0, 2–9 | `work/A/` |
-| 6 | `src/check_evaluator.py` | V4: our evaluator on A's decisions must give TP 13 / FP 3,337 | stdout (assert) |
-| 7 | `src/run_all.py` | Test 1 (uid swap): all scenarios of `Skenario_Pengujian.xlsx` | `results/results.json`, `run_all.log` |
-| 8 | `src/hybrid.py`, `src/explore_rel.py`, `src/bench_detectors.py` | post-hoc exploration: hybrid, X4 (relative features + calibration), detector benchmark | `results/hybrid.json`, `explore_rel.json`, `bench_detectors.json` |
-| 9 | `src/k3_day.py` | Test 2: K3 session hijack, per day, intensities 2×/5×/10× | `results/k3_day.json` |
-| 10 | `src/k3_window.py` | Test 3: K3 per 15/30-minute window | `results/k3_window.json` |
-| 11 | `src/k3_window2.py` | Test 3b: improved window detector (accumulation, EWMA, suppression), 30/60 minutes | `results/k3_window2.json` |
+| 1 | `src/step01_data_to_parquet.py` | zip → Parquet; column `rn` keeps the original line order | `work/events.parquet` |
+| 2 | `src/step02_user_stats.py` | per-user statistics used to pick the swap pairs | `work/user_stats.json` |
+| 3 | `src/step03_check_v1_v2_data.py`, `src/step03_check_ip_geo_coverage.py` | data checks V1–V2, IP/geolocation coverage | `results/v1_v2.json`, `results/ip_geo_coverage.json` |
+| 4 | `src/step04_daily_tables.py` | per user-day tables for the models | `work/base/` |
+| 5 | `src/step05_model_A_landauer.py`, `src/step05_summarize_A_seeds.py` | **model A** (Landauer), seed 1 plus seeds 0, 2–9 | `work/A/` |
+| 6 | `src/step06_check_evaluator_vs_A.py` | V4: our evaluator on A's decisions must give TP 13 / FP 3,337 | stdout (assert) |
+| 7 | `src/step07_test1_uidswap_models_B_C_D.py` | Test 1 (uid swap): **models B, B+RS, C, D** and all scenarios of `Skenario_Pengujian.xlsx` | `results/results.json`, `run_all.log` |
+| 8 | `src/step08_explore_model_hybrid.py`, `src/step08_explore_model_X4_relative.py`, `src/step08_explore_detectors_on_X4.py` | post-hoc: **model Hybrid**, **models X1–X4**, detector benchmark | `results/hybrid.json`, `explore_rel.json`, `bench_detectors.json` |
+| 9 | `src/step09_test2_k3_daily_A_D_X4_hybrid.py` | Test 2: K3 session hijack per day, **A, Hybrid, D, X4** | `results/k3_day.json` |
+| 10 | `src/step10_test3_k3_window_Awin_X4win.py` | Test 3: K3 per 15/30-minute window, **A-win, X4-win** | `results/k3_window.json` |
+| 11 | `src/step11_test3b_k3_window_X5.py` | Test 3b: K3 per 30/60-minute window, **X5** vs A-win, X4-win | `results/k3_window2.json` |
+
+Every script starts with a header that says which step, test and model it belongs to, its
+input and output, and how to run it. Shared code is in the `lib_*.py` files:
+
+| Library | Contents |
+|---|---|
+| `src/lib_uid_swap.py` | uid-swap attack of Landauer (pair and switch-time selection) |
+| `src/lib_k3_attack.py` | K3 session-hijack attack generator |
+| `src/lib_models.py` | features F1–F8, Isolation Forest, flags k1–k5, risk score, Landauer detector, evaluator |
+| `src/lib_k3_window.py` | window features and alert logic of X4-win and X5 |
+| `src/config.py` | data, work and result paths |
 
 Each test was specified before it was run: `docs/SPEC_model_v2.md` (Test 1),
 `docs/SPEC_K3_window.md` (Test 3), `docs/SPEC_K3_window_v2.md` (Test 3b).
 
 ## Models
 
-| Name | What it is |
-|---|---|
-| **A** | Baseline of Landauer et al. (2022): one model per user, L1 distance of daily event counts to the user's history, threshold 0.6 |
-| **B** | One global Isolation Forest on basic daily features (event counts per type) |
-| **B+RS** | B + risk scoring |
-| **C** | Isolation Forest on basic + contextual features F1–F8 |
-| **D** | Proposed model: C + risk score `R = 0.5·a + 0.4·c + 0.1·h` (a = IF score, c = context flags k1–k5, h = history `0.3·h_prev + 0.7·R_prev`) |
-| **Hybrid** | D with the IF score *a* replaced by Landauer's per-user distance (post-hoc) |
-| **X4** | D with features relative to the user's own last 14 days and a per-user score calibration over the last 30 days (post-hoc) |
-| **A-win / X4-win** | A and X4 applied to 15/30/60-minute windows instead of days |
-| **X5** | X4-win + accumulation over K windows + EWMA and hour-of-day baseline + 4-hour alert suppression |
+| Name | What it is | Code |
+|---|---|---|
+| **A** | Baseline of Landauer et al. (2022): one model per user, L1 distance of daily event counts to the user's history, threshold 0.6 | `step05_model_A_landauer.py` (section 3); same detector as `lib_models.hybrid_detect(w=(1,0,0))` |
+| **B** | One global Isolation Forest on basic daily features (event counts per type) | `step07` key `E2_B`; `lib_models.iforest_a()` |
+| **B+RS** | B + risk scoring | `step07` key `E3_B+RS`; `lib_models.risk()` |
+| **C** | Isolation Forest on basic + contextual features F1–F8 | `step07` key `E4_C`; `lib_models.compute_features()` |
+| **D** | Proposed model: C + risk score `R = 0.5·a + 0.4·c + 0.1·h` (a = IF score, c = context flags k1–k5, h = history `0.3·h_prev + 0.7·R_prev`) | `step07` key `E5_D`; `lib_models.flags_c()`, `risk()` |
+| **Hybrid** | D with the IF score *a* replaced by Landauer's per-user distance (post-hoc) | `step08_explore_model_hybrid.py`; `lib_models.hybrid_detect()` |
+| **X4** | D with features relative to the user's own last 14 days and a per-user score calibration over the last 30 days (post-hoc) | `step08_explore_model_X4_relative.py`; `lib_models.relative_A()`, `calibrate_per_user()` |
+| **A-win / X4-win** | A and X4 applied to 15/30/60-minute windows instead of days | `step10_test3_k3_window_Awin_X4win.py` |
+| **X5** | X4-win + accumulation over K windows + EWMA and hour-of-day baseline + 4-hour alert suppression | `step11_test3b_k3_window_X5.py`; `lib_k3_window.py` |
 
 ## Seeds and evaluation
 
@@ -268,8 +279,8 @@ far more hijack sessions at the same false-alarm budget.
   which shows the chunked pipeline equals Landauer's original scripts on the first 3 M events.
   It needs the original scripts from [ait-aecid/clue-lds](https://github.com/ait-aecid/clue-lds)
   (`make_detect_chunk.py` builds `detect_chunk.py` from Landauer's `detect.py`). It is not needed
-  to reproduce the results; `src/duck_seed.py` gives the same TP/FP.
-- `src/v3.py` — check V3 (DuckDB = chunked pipeline); needs the output of `legacy/run_seed.sh`.
+  to reproduce the results; `src/step05_model_A_landauer.py` gives the same TP/FP.
+- `src/check_v3_swap_equivalence.py` — check V3 (DuckDB = chunked pipeline); needs the output of `legacy/run_seed.sh`.
 - `tools/` — builds result tables (`results_table.py`) and fills the scenario workbook (`fill_workbook.py`).
 - `expected_results/` — the original results from the thesis runs, for comparison.
 

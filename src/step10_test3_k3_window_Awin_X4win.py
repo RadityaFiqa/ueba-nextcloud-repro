@@ -1,5 +1,12 @@
-"""K3-b: per-window detection (15 and 30 min) on K3 session hijacks, as fixed in
-pipeline/SPEC_K3_window_DRAFT.md (approved 2026-10-24).
+"""STEP 10 - TEST 3 (K3 session hijack, per 15/30-min window): models A-win and X4-win
+on the 174 users that meet Landauer's victim rules; budget <= 1.75 false alarms per day.
+  Attack: lib_k3_attack.py
+  Output: results/k3_window.json (key test_seed1 = reported numbers)
+  Run   : python -W ignore src/step10_test3_k3_window_Awin_X4win.py
+
+------------------------------------------------------------------------
+K3-b: per-window detection (15 and 30 min) on K3 session hijacks, as fixed in
+docs/SPEC_K3_window.md (approved 2026-10-24).
 
 Scope: the 174 users meeting Landauer's victim rules. Unit: an active user-window.
 Models
@@ -30,9 +37,9 @@ import duckdb
 import numpy as np
 from sklearn.ensemble import IsolationForest
 
-import k3_common as k3
-import lib
-from base_daily import SENSITIVE
+import lib_k3_attack as k3  # K3 session-hijack generator
+import lib_models as lib  # features F1-F8, models B/C/D/X4, Landauer detector, evaluator
+from step04_daily_tables import SENSITIVE
 
 PARQUET = config.PARQUET
 DAYS = 1910
@@ -281,6 +288,8 @@ for W in (30, 15):
     RUNS = {(s, lv): run_scores(s, lv) for s in VAL + [TEST] for lv in k3.LEVELS}
     log(f'W={W}: per-run victim rescoring {time.time() - t:.0f}s')
     out = {}
+    # A-win = Landauer's distance per window (score index 0), X4-win = calibrated risk R (index 1);
+    # each gets the threshold that detects most sessions on seeds 0+2 within the alarm budget
     for name, key, grid, strict in (('A-win', 0, GRID_A, True), ('X4-win', 1, GRID_R, False)):
         cands = []
         for th in grid:

@@ -1,4 +1,10 @@
-"""How much of CLUE-LDS carries IP / geolocation information?
+"""STEP 3 - DATA CHECK: how many events carry IP / geolocation information.
+  Input : data/clue.zip
+  Output: results/ip_geo_coverage.json
+  Run   : python src/step03_check_ip_geo_coverage.py --data data/clue.zip --out results/ip_geo_coverage.json
+
+------------------------------------------------------------------------
+How much of CLUE-LDS carries IP / geolocation information?
 
 CLUE-LDS has no raw IP field. IP-related information exists only as the
 top-level fields `isLocalIP` (bool) and `location` (GeoIP dict), and the

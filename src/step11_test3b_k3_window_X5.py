@@ -1,4 +1,13 @@
-"""K3-b v2 (pipeline/SPEC_K3_window_v2.md, fixed 2026-10-24 before running).
+"""STEP 11 - TEST 3b (K3 session hijack, per 30/60-min window): improved window model X5
+  X5-base : X4-win with EWMA and hour-of-day baselines
+  X5-acc  : X5-base + accumulation of the risk over K windows
+  X5-full : X5-acc + 4-hour alert suppression per user
+compared with A-win and X4-win. Window code: lib_k3_window.py.
+  Output: results/k3_window2.json (key seed1 = reported numbers; test_seeds_3_9 = extra check)
+  Run   : python -W ignore src/step11_test3b_k3_window_X5.py
+
+------------------------------------------------------------------------
+K3-b v2 (docs/SPEC_K3_window_v2.md, fixed 2026-10-24 before running).
 Models A-win, X4-win (unchanged), X5-base, X5-acc, X5-full on 30- and 60-min windows.
 Tuning on seeds 0+2 (budget <= 1.75 false alarms/day); main test on unseen seeds 3-9
 (420 sessions); seed 1 reported separately (already seen)."""
@@ -10,9 +19,9 @@ import time
 import numpy as np
 from scipy.stats import binomtest
 
-import k3_common as k3
-import lib
-from k3w_lib import GlobalIF, calib_risk, inject, load_windows, user_features, user_features_v2
+import lib_k3_attack as k3  # K3 session-hijack generator
+import lib_models as lib  # features F1-F8, models B/C/D/X4, Landauer detector, evaluator
+from lib_k3_window import GlobalIF, calib_risk, inject, load_windows, user_features, user_features_v2
 
 VAL, SEED1, TEST = [0, 2], [1], list(range(3, 10))
 SEEDS = VAL + SEED1 + TEST
@@ -136,6 +145,10 @@ for W in (30, 60):
         WS = dict(WS0); WS.update(ov['WS'])
         return V, WS
 
+    # The five window models compared in Test 3b:
+    #   A-win   Landauer's distance per window             X4-win  Test 3 model, unchanged
+    #   X5-base X4-win with EWMA + hour-of-day baselines   X5-acc  X5-base risk summed over K windows
+    #   X5-full X5-acc + no new alert for the same user within SUP windows (4 hours)
     MODELS = {  # name: (score key, strict, K, suppress, grid)
         'A-win': ('A', True, 1, 0, 'single'), 'X4-win': ('X4', False, 1, 0, 'single'),
         'X5-base': ('X5', False, 1, 0, 'single'), 'X5-acc': ('X5acc', False, K, 0, 'acc'),

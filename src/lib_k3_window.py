@@ -1,7 +1,16 @@
-"""Shared code for per-window K3 evaluation (K3-b v2, pipeline/SPEC_K3_window_v2.md).
+"""LIBRARY for the window models of Test 3b.
+  load_windows(), inject() ...... window tables and attack injection
+  user_features() ............... X4-win features
+  user_features_v2() ............ X5 features (EWMA + hour-of-day baseline)
+  GlobalIF, calib_risk() ........ Isolation Forest score a and risk R per window
+  alert_stream() ................ accumulation over K windows + alert suppression (X5)
+  evaluate2() ................... sessions detected, latency, false alarms per day
+
+------------------------------------------------------------------------
+Shared code for per-window K3 evaluation (K3-b v2, docs/SPEC_K3_window_v2.md).
 
 Win / load_windows / inject / user_features / calib_risk / GlobalIF are the K3-b versions
-(k3_window.py), unchanged. New: user_features_v2 (EWMA + hour-profile baseline),
+(step10_test3_k3_window_Awin_X4win.py), unchanged. New: user_features_v2 (EWMA + hour-profile baseline),
 alert_stream (accumulation over K calendar windows + per-user suppression) and evaluate2.
 """
 import config  # data / work / results paths (see config.py)
@@ -13,7 +22,7 @@ import duckdb
 import numpy as np
 from sklearn.ensemble import IsolationForest
 
-from base_daily import SENSITIVE
+from step04_daily_tables import SENSITIVE
 
 PARQUET = config.PARQUET
 SENS = set(SENSITIVE)

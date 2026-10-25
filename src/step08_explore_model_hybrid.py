@@ -1,4 +1,10 @@
-"""Exploratory (post-hoc) experiment: hybrid of Landauer's per-user score with
+"""STEP 8 - EXPLORATION (post-hoc), uid swap: model Hybrid
+(Landauer's per-user distance as score a, combined with context c and history h).
+  Output: results/hybrid.json
+  Run   : python -W ignore src/step08_explore_model_hybrid.py
+
+------------------------------------------------------------------------
+Exploratory (post-hoc) experiment: hybrid of Landauer's per-user score with
 context (c) and history (h). Designed after the main results were known, so it
 does not replace H1. Tuning on seeds 0 and 2, reported on seed 1.
 
@@ -16,7 +22,7 @@ import time
 import numpy as np
 from scipy.stats import binomtest
 
-import lib
+import lib_models as lib  # features F1-F8, models B/C/D/X4, Landauer detector, evaluator
 
 STATS = config.STATS
 VAL, TEST = [0, 2], 1

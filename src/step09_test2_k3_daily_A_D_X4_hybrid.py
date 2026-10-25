@@ -1,4 +1,11 @@
-"""K3-a: daily evaluation of A, D, X4 and hybrid on K3 session hijacks (seed 1, three
+"""STEP 9 - TEST 2 (K3 session hijack, per day): models A, Hybrid, D, X4 on seed 1,
+3 intensities (2x, 5x, 10x) x 20 victims = 60 sessions. Thresholds from Test 1, no re-tuning.
+  Attack: lib_k3_attack.py
+  Output: results/k3_day.json
+  Run   : python -W ignore src/step09_test2_k3_daily_A_D_X4_hybrid.py   (~8 min)
+
+------------------------------------------------------------------------
+K3-a: daily evaluation of A, D, X4 and hybrid on K3 session hijacks (seed 1, three
 intensities), with the thresholds and weights already locked (no re-tuning).
 Data = clean CLUE-LDS (no uid swap); the attack events are added to the victim's
 attack-day summary (counts, 5-min histogram, first/last minute, sensitive count,
@@ -11,9 +18,9 @@ import time
 import numpy as np
 from scipy.stats import binomtest
 
-import k3_common as k3
-import lib
-from base_daily import SENSITIVE
+import lib_k3_attack as k3  # K3 session-hijack generator
+import lib_models as lib  # features F1-F8, models B/C/D/X4, Landauer detector, evaluator
+from step04_daily_tables import SENSITIVE
 
 SEED = 1
 OUT = os.path.join(config.RESULTS, 'k3_day.json')
@@ -75,14 +82,18 @@ for level in k3.LEVELS:
     f = lib.compute_features(recs, W=14)
     _, c = lib.flags_c(f['F'])
     out = {}
+    # model A: Landauer's detector (weights (1, 0, 0) = Landauer's distance only, threshold 0.6)
     st, dc, out['A'], _, _ = lib.hybrid_detect(f, c, w=(1, 0, 0), theta=0.6, labels=labels)
     dec = {'A': (st, dc)}
+    # model Hybrid: Landauer's distance + context c + history h (locked in step 8)
     st, dc, out['Hybrid'], _, _ = lib.hybrid_detect(f, c, w=(0.5, 0.3, 0.2), lam=0.3, theta=0.4, labels=labels)
     dec['Hybrid'] = (st, dc)
+    # model D: global Isolation Forest on Set A + F1-F8, risk R = 0.5a + 0.4c + 0.1h >= 0.55
     a = lib.iforest_a(f, lib.design_matrix(f, 'AF'))
     R = lib.risk(f, a, c, (0.5, 0.4, 0.1), 0.3)
     st, dc, out['D'] = lib.evaluate(f, np.nan_to_num(R, nan=-1) >= 0.55, ~np.isnan(a) & ~f['first'], labels)
     dec['D'] = (st, dc)
+    # model X4: as D, but Set A relative to the user's last 14 days and a calibrated per user, R >= 0.60
     X = np.hstack([lib.relative_A(f, W=14), f['F']]).astype(np.float32)
     a = lib.calibrate_per_user(f, lib.iforest_a(f, X))
     R = lib.risk(f, a, c, (0.5, 0.4, 0.1), 0.3)

@@ -1,4 +1,10 @@
-"""Per-user statistics needed by the uid-swap pair selection (pairs.py), from events.parquet.
+"""STEP 2 - DATA: per-user statistics used to pick the uid-swap pairs (Test 1).
+  Input : work/events.parquet
+  Output: work/user_stats.json (same fields as Landauer's get_user_similarity.py)
+  Run   : python src/step02_user_stats.py
+
+------------------------------------------------------------------------
+Per-user statistics needed by the uid-swap pair selection (lib_uid_swap.py), from events.parquet.
 
 Same content and order as legacy/stats.py (which streams clue.zip in ~20 min):
 users in first-appearance order; per user the sorted event types, event count,

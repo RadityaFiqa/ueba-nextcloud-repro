@@ -1,6 +1,10 @@
-"""Per-seed table and mean ± std (sample std, ddof=1) of baseline metrics.
+"""STEP 5 - MODEL A: table of model A's metrics over several seeds.
+  Run   : python src/step05_summarize_A_seeds.py work/A 3 4 5 6 7 8 9
 
-Usage: python summarize.py RUNS_DIR [SEED ...]   (default seeds 3-9 = test seeds)
+------------------------------------------------------------------------
+Per-seed table and mean ± std (sample std, ddof=1) of baseline metrics.
+
+Usage: python step05_summarize_A_seeds.py RUNS_DIR [SEED ...]   (default seeds 3-9 = test seeds)
 Writes RUNS_DIR/summary.csv and prints a markdown table.
 """
 import csv
