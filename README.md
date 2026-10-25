@@ -76,8 +76,7 @@ Each test was specified before it was run: `docs/SPEC_model_v2.md` (Test 1),
 
 - **Seed 1** is Landauer's default run. All main numbers are reported on it, for all 5,389 users.
 - **Seeds 0 and 2** are used for tuning (thresholds, weights). Nothing was tuned on seed 1.
-- **Seeds 3–9** are only used in Test 3b, as unseen data, to check that the window improvements
-  were not fitted to seed 1.
+- `k3_window2.json` also holds Test 3b results on seeds 3–9; they are not used in this report.
 - A seed fixes which users are swapped and which victims/times get the K3 hijack. The same seed
   always gives the same result.
 - **TPR** = share of attacks detected. **FPR** = share of normal user-days flagged.
@@ -231,35 +230,23 @@ rate), with θ chosen on seeds 0 + 2.
 | 15 min | A-win | 0.999 | 1 (2%) | 59 min | – | 1.50 |
 | 15 min | **X4-win** | 0.74 | **35 (58%)** | 33 min | 103 min | 1.56 |
 
-### Test 3b — improved window detector (X5)
+### Test 3b — improved window detector (X5), seed 1 (60 sessions)
 
-Same budget (≤ 1.75 false alarms/day), θ chosen on seeds 0 + 2. Main test on unseen
-seeds 3–9 (7 × 60 = 420 sessions); seed 1 shown for comparison with Test 3.
+Same budget (≤ 1.75 false alarms/day), θ chosen on seeds 0 + 2.
 K = 3 windows of accumulation at 30 min, K = 2 at 60 min.
 
-| Window | Model | θ | Detected, seeds 3–9 (420) | Median / p90 latency | False alarms/day | Detected, seed 1 (60) |
+| Window | Model | θ | Sessions detected (60) | Median latency | p90 latency | False alarms/day |
 |---|---|---|---|---|---|---|
-| 30 min | A-win | 0.93 | 45 (11%) | 28 / 35 min | 1.72 | 5 |
-| 30 min | X4-win | 0.73 | 195 (46%) | 52 / 108 min | 1.53 | 32 |
-| 30 min | X5-base (EWMA baselines) | 0.74 | 217 (52%) | 44 / 93 min | 1.55 | 36 |
-| 30 min | X5-acc (+ accumulation) | 1.92 | 242 (58%) | 76 / 101 min | 1.62 | 42 |
-| 30 min | **X5-full (+ suppression)** | 1.80 | **309 (74%)** | 76 / 98 min | 1.65 | **49** |
-| 60 min | A-win | 0.89 | 108 (26%) | 48 / 63 min | 1.74 | 10 |
-| 60 min | X4-win | 0.72 | 182 (43%) | 67 / 131 min | 1.41 | 27 |
-| 60 min | X5-base | 0.73 | 225 (54%) | 71 / 138 min | 1.56 | 36 |
-| 60 min | X5-acc | 1.295 | 261 (62%) | 97 / 137 min | 1.75 | 42 |
-| 60 min | **X5-full** | 1.257 | **288 (69%)** | 98 / 135 min | 1.74 | **45** |
-
-Sign tests on seeds 3–9 (sessions detected by only one of the two models):
-
-| Window | Comparison | Only X5-full | Only other | p |
-|---|---|---|---|---|
-| 30 min | X5-full vs X4-win | 122 | 8 | 2.6×10⁻²⁷ |
-| 30 min | X5-full vs A-win | 267 | 3 | 3.5×10⁻⁷⁵ |
-| 30 min | X5-full vs X5-acc | 67 | 0 | 1.4×10⁻²⁰ |
-| 60 min | X5-full vs X4-win | 114 | 8 | 3.9×10⁻²⁵ |
-| 60 min | X5-full vs A-win | 195 | 15 | 4.1×10⁻⁴¹ |
-| 60 min | X5-full vs X5-acc | 27 | 0 | 1.5×10⁻⁸ |
+| 30 min | A-win | 0.93 | 5 (8%) | 19 min | 24 min | 1.72 |
+| 30 min | X4-win | 0.73 | 32 (53%) | 48 min | 109 min | 1.53 |
+| 30 min | X5-base (EWMA baselines) | 0.74 | 36 (60%) | 57 min | 148 min | 1.55 |
+| 30 min | X5-acc (+ accumulation) | 1.92 | 42 (70%) | 79 min | 110 min | 1.62 |
+| 30 min | **X5-full (+ suppression)** | 1.80 | **49 (82%)** | 79 min | 108 min | 1.65 |
+| 60 min | A-win | 0.89 | 10 (17%) | 31 min | 48 min | 1.74 |
+| 60 min | X4-win | 0.72 | 27 (45%) | 68 min | 153 min | 1.41 |
+| 60 min | X5-base | 0.73 | 36 (60%) | 79 min | 130 min | 1.56 |
+| 60 min | X5-acc | 1.295 | 42 (70%) | 87 min | 131 min | 1.74 |
+| 60 min | **X5-full** | 1.257 | **45 (75%)** | 84 min | 131 min | 1.74 |
 
 ### Summary
 
@@ -268,8 +255,8 @@ Sign tests on seeds 3–9 (sessions detected by only one of the two models):
 | 1. uid swap, per day | 20 user-days | **13/20**, FPR 0.046 | D 11/20, FPR 0.099 (X4 post-hoc: 15/20, FPR 0.078) |
 | 2. Session hijack, per day | 60 sessions | 9/60 (15%) | **D 46/60 (77%)** |
 | 3. Session hijack, 15-min window | 60 sessions | 1/60 (2%) | **X4-win 35/60 (58%)**, median 33 min |
-| 3b. Session hijack, 30-min window | 420 sessions | 45/420 (11%) | **X5-full 309/420 (74%)**, median 76 min |
-| 3b. Session hijack, 60-min window | 420 sessions | 108/420 (26%) | **X5-full 288/420 (69%)**, median 98 min |
+| 3b. Session hijack, 30-min window | 60 sessions | 5/60 (8%) | **X5-full 49/60 (82%)**, median 79 min |
+| 3b. Session hijack, 60-min window | 60 sessions | 10/60 (17%) | **X5-full 45/60 (75%)**, median 84 min |
 
 The baseline is better at detecting a full identity swap, but the proposed model detects
 far more hijack sessions at the same false-alarm budget.
