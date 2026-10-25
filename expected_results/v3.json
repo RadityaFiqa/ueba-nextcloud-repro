@@ -1,0 +1,9 @@
+{
+ "user_days_ref": 83147,
+ "events_ref": 50522931,
+ "events_cand": 50522931,
+ "user_days_of_swapped_identities": 9640,
+ "differing_count_cells": 0,
+ "differing_user_days": 0,
+ "pass": true
+}

@@ -1,0 +1,396 @@
+{
+ "meta": "K3-a: daily evaluation of A, D, X4 and hybrid on K3 session hijacks (seed 1, three\nintensities), with the thresholds and weights already locked (no re-tuning).\nData = clean CLUE-LDS (no uid swap); the attack events are added to the victim's\nattack-day summary (counts, 5-min histogram, first/last minute, sensitive count,\npath count, folder prefixes).",
+ "plans": [
+  {
+   "victim": "pretty-fuchsia-galliform-studiomanager",
+   "day": 17763,
+   "start": 1534795918.0248759,
+   "dur": 7002.978525874014,
+   "med30": 8.0
+  },
+  {
+   "victim": "doubtful-peach-peacock-matron",
+   "day": 18173,
+   "start": 1570216890.6717608,
+   "dur": 8562.449841632915,
+   "med30": 6.0
+  },
+  {
+   "victim": "accessible-coral-ferret-repairer",
+   "day": 17829,
+   "start": 1540492858.04152,
+   "dur": 9931.558332766122,
+   "med30": 3.0
+  },
+  {
+   "victim": "depressed-coral-skink-weighbridgeclerk",
+   "day": 19039,
+   "start": 1645008548.984329,
+   "dur": 6236.820819935318,
+   "med30": 3.0
+  },
+  {
+   "victim": "dear-brown-egret-bankclerk",
+   "day": 17577,
+   "start": 1518711132.9479473,
+   "dur": 7074.578054065928,
+   "med30": 5.0
+  },
+  {
+   "victim": "bold-green-rodent-upholsterer",
+   "day": 18639,
+   "start": 1610448455.5571878,
+   "dur": 4993.276666887001,
+   "med30": 2.0
+  },
+  {
+   "victim": "solid-fuchsia-hyena-metalworker",
+   "day": 18607,
+   "start": 1607665940.782625,
+   "dur": 10084.679117096604,
+   "med30": 7.0
+  },
+  {
+   "victim": "icy-crimson-carp-book-keeper",
+   "day": 19075,
+   "start": 1648133667.9627678,
+   "dur": 9793.502032875636,
+   "med30": 2.0
+  },
+  {
+   "victim": "doubtful-amethyst-perch-landlady",
+   "day": 18093,
+   "start": 1563281566.5779626,
+   "dur": 8489.748548859665,
+   "med30": 4.0
+  },
+  {
+   "victim": "great-harlequin-antelope-busconductor",
+   "day": 18568,
+   "start": 1604298128.2932131,
+   "dur": 7935.863037565011,
+   "med30": 4.0
+  },
+  {
+   "victim": "civilian-apricot-salamander-sportscoach",
+   "day": 18965,
+   "start": 1638582075.8327398,
+   "dur": 3655.010598866812,
+   "med30": 5.0
+  },
+  {
+   "victim": "repulsive-violet-canidae-warehousewoman",
+   "day": 17518,
+   "start": 1513593330.7427738,
+   "dur": 8717.049904241505,
+   "med30": 6.0
+  },
+  {
+   "victim": "semantic-gray-crayfish-shipbuilder",
+   "day": 18639,
+   "start": 1610423464.9854107,
+   "dur": 5666.51483386017,
+   "med30": 3.0
+  },
+  {
+   "victim": "fresh-lime-perch-projectengineer",
+   "day": 17613,
+   "start": 1521779772.2049515,
+   "dur": 7418.4995198954075,
+   "med30": 12.5
+  },
+  {
+   "victim": "bitter-red-echidna-retired",
+   "day": 18942,
+   "start": 1636615470.8109002,
+   "dur": 4493.390533862419,
+   "med30": 6.0
+  },
+  {
+   "victim": "available-beige-donkey-ventriloquist",
+   "day": 18975,
+   "start": 1639486923.4778478,
+   "dur": 10505.15829222228,
+   "med30": 2.0
+  },
+  {
+   "victim": "painful-red-porcupine-sub-postmaster",
+   "day": 17490,
+   "start": 1511197782.5031457,
+   "dur": 6187.395594836526,
+   "med30": 3.0
+  },
+  {
+   "victim": "loose-moccasin-badger-plantfitter",
+   "day": 18696,
+   "start": 1615343435.0286329,
+   "dur": 8359.186161718455,
+   "med30": 2.0
+  },
+  {
+   "victim": "wonderful-coral-crab-marketgardener",
+   "day": 18655,
+   "start": 1611830819.6910996,
+   "dur": 9841.499571575234,
+   "med30": 3.0
+  },
+  {
+   "victim": "slippery-beige-ant-steelworker",
+   "day": 18299,
+   "start": 1581097322.1473422,
+   "dur": 3636.9669260411188,
+   "med30": 5.0
+  }
+ ],
+ "levels": {
+  "rendah": {
+   "attack_events": 802,
+   "metrics": {
+    "A": {
+     "TP": 3,
+     "FN": 17,
+     "FP": 3324,
+     "TN": 69157,
+     "TP_adj": 3,
+     "FN_adj": 17,
+     "train": 5260,
+     "detect": 72498,
+     "TPR": 0.15,
+     "TPR_adj": 0.15,
+     "FPR": 0.04586029442198645,
+     "Prec": 0.0009017132551848512,
+     "R": 0.06764577278222177,
+     "alerts": 3327,
+     "alerts_per_day": 1.7418848167539267
+    },
+    "Hybrid": {
+     "TP": 6,
+     "FN": 14,
+     "FP": 4300,
+     "TN": 66247,
+     "TP_adj": 8,
+     "FN_adj": 12,
+     "train": 7193,
+     "detect": 70565,
+     "TPR": 0.3,
+     "TPR_adj": 0.4,
+     "FPR": 0.06095227295278325,
+     "Prec": 0.0018570102135561746,
+     "R": 0.09250495125903443,
+     "alerts": 4306,
+     "alerts_per_day": 2.2544502617801045
+    },
+    "D": {
+     "TP": 14,
+     "FN": 6,
+     "FP": 6508,
+     "TN": 59165,
+     "TP_adj": 16,
+     "FN_adj": 4,
+     "train": 12067,
+     "detect": 65691,
+     "TPR": 0.7,
+     "TPR_adj": 0.8,
+     "FPR": 0.09909704140209827,
+     "Prec": 0.002452483139178418,
+     "R": 0.15518660459373956,
+     "alerts": 6522,
+     "alerts_per_day": 3.4146596858638745
+    },
+    "X4": {
+     "TP": 11,
+     "FN": 9,
+     "FP": 5370,
+     "TN": 63571,
+     "TP_adj": 12,
+     "FN_adj": 8,
+     "train": 8799,
+     "detect": 68959,
+     "TPR": 0.55,
+     "TPR_adj": 0.6,
+     "FPR": 0.07789269085159774,
+     "Prec": 0.002229654403567447,
+     "R": 0.11315877465984207,
+     "alerts": 5381,
+     "alerts_per_day": 2.817277486910995
+    }
+   }
+  },
+  "sedang": {
+   "attack_events": 1957,
+   "metrics": {
+    "A": {
+     "TP": 2,
+     "FN": 18,
+     "FP": 3324,
+     "TN": 69157,
+     "TP_adj": 3,
+     "FN_adj": 17,
+     "train": 5260,
+     "detect": 72498,
+     "TPR": 0.1,
+     "TPR_adj": 0.15,
+     "FPR": 0.04586029442198645,
+     "Prec": 0.0009017132551848512,
+     "R": 0.06764577278222177,
+     "alerts": 3326,
+     "alerts_per_day": 1.7413612565445027
+    },
+    "Hybrid": {
+     "TP": 8,
+     "FN": 12,
+     "FP": 4301,
+     "TN": 66245,
+     "TP_adj": 9,
+     "FN_adj": 11,
+     "train": 7194,
+     "detect": 70564,
+     "TPR": 0.4,
+     "TPR_adj": 0.45,
+     "FPR": 0.06096731210841153,
+     "Prec": 0.0020881670533642693,
+     "R": 0.09251781167211091,
+     "alerts": 4309,
+     "alerts_per_day": 2.256020942408377
+    },
+    "D": {
+     "TP": 15,
+     "FN": 5,
+     "FP": 6507,
+     "TN": 59165,
+     "TP_adj": 17,
+     "FN_adj": 3,
+     "train": 12068,
+     "detect": 65690,
+     "TPR": 0.75,
+     "TPR_adj": 0.85,
+     "FPR": 0.09908332318187356,
+     "Prec": 0.002605763335377069,
+     "R": 0.15519946500681603,
+     "alerts": 6522,
+     "alerts_per_day": 3.4146596858638745
+    },
+    "X4": {
+     "TP": 14,
+     "FN": 6,
+     "FP": 5373,
+     "TN": 63563,
+     "TP_adj": 16,
+     "FN_adj": 4,
+     "train": 8804,
+     "detect": 68954,
+     "TPR": 0.7,
+     "TPR_adj": 0.8,
+     "FPR": 0.07794185911570152,
+     "Prec": 0.0029690109482278714,
+     "R": 0.11322307672522441,
+     "alerts": 5387,
+     "alerts_per_day": 2.8204188481675394
+    }
+   }
+  },
+  "tinggi": {
+   "attack_events": 3954,
+   "metrics": {
+    "A": {
+     "TP": 4,
+     "FN": 16,
+     "FP": 3323,
+     "TN": 69157,
+     "TP_adj": 5,
+     "FN_adj": 15,
+     "train": 5261,
+     "detect": 72497,
+     "TPR": 0.2,
+     "TPR_adj": 0.25,
+     "FPR": 0.04584713024282561,
+     "Prec": 0.0015024038461538462,
+     "R": 0.06765863319529823,
+     "alerts": 3327,
+     "alerts_per_day": 1.7418848167539267
+    },
+    "Hybrid": {
+     "TP": 11,
+     "FN": 9,
+     "FP": 4300,
+     "TN": 66243,
+     "TP_adj": 13,
+     "FN_adj": 7,
+     "train": 7197,
+     "detect": 70561,
+     "TPR": 0.55,
+     "TPR_adj": 0.65,
+     "FPR": 0.06095572912975065,
+     "Prec": 0.0030141432877347552,
+     "R": 0.09255639291134031,
+     "alerts": 4311,
+     "alerts_per_day": 2.257068062827225
+    },
+    "D": {
+     "TP": 17,
+     "FN": 3,
+     "FP": 6506,
+     "TN": 59165,
+     "TP_adj": 19,
+     "FN_adj": 1,
+     "train": 12069,
+     "detect": 65689,
+     "TPR": 0.85,
+     "TPR_adj": 0.95,
+     "FPR": 0.09906960454386259,
+     "Prec": 0.0029118773946360155,
+     "R": 0.1552123254198925,
+     "alerts": 6523,
+     "alerts_per_day": 3.4151832460732985
+    },
+    "X4": {
+     "TP": 17,
+     "FN": 3,
+     "FP": 5370,
+     "TN": 63571,
+     "TP_adj": 19,
+     "FN_adj": 1,
+     "train": 8799,
+     "detect": 68959,
+     "TPR": 0.85,
+     "TPR_adj": 0.95,
+     "FPR": 0.07789269085159774,
+     "Prec": 0.0035257005010205975,
+     "R": 0.11315877465984207,
+     "alerts": 5387,
+     "alerts_per_day": 2.8204188481675394
+    }
+   }
+  }
+ },
+ "pooled_60": {
+  "A": {
+   "TP": 9,
+   "TPR": 0.15,
+   "only_model": 0,
+   "only_A": 0,
+   "mcnemar_p": 1.0
+  },
+  "Hybrid": {
+   "TP": 25,
+   "TPR": 0.4166666666666667,
+   "only_model": 16,
+   "only_A": 0,
+   "mcnemar_p": 3.0517578125e-05
+  },
+  "D": {
+   "TP": 46,
+   "TPR": 0.7666666666666667,
+   "only_model": 37,
+   "only_A": 0,
+   "mcnemar_p": 1.4551915228366852e-11
+  },
+  "X4": {
+   "TP": 42,
+   "TPR": 0.7,
+   "only_model": 33,
+   "only_A": 0,
+   "mcnemar_p": 2.3283064365386963e-10
+  }
+ }
+}

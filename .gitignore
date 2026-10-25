@@ -1,0 +1,10 @@
+# dataset and generated files (large; recreated by run_all.sh)
+data/
+work/
+results/
+*.parquet
+*.duckdb
+__pycache__/
+*.pyc
+.venv/
+venv/

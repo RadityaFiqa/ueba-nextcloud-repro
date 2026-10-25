@@ -1,0 +1,231 @@
+{
+ "meta": "K3-b: per-window detection (15 and 30 min) on K3 session hijacks, as fixed in\npipeline/SPEC_K3_window_DRAFT.md (approved 2026-10-24).\n\nScope: the 174 users meeting Landauer's victim rules. Unit: an active user-window.\nModels\n  A-win : Landauer's detector on window count vectors in its update + FIFO mode\n          (detect.py -u -f): queue = the user's last 30 windows; a = min L1/limit.\n  X4-win: relative Set A per window (log1p(x) - log1p(median of the user's previous 30\n          windows)) + 4 window context features; one global IF (200 trees, 256 samples,\n          60-day window, retrain 7 days; percentile reference <= 20,000 training windows);\n          per-user calibration (previous 30 scored windows); R = 0.5a + 0.4c + 0.1h, lambda 0.3.\n          Context: c1 volume robust z (log1p, MAD floor 0.5, clip 10), c2 share of path\n          events in folders the user never touched, c3 excess sensitive share, c4 window hour\n          outside the user's 2.5-97.5 percentile hours (previous 200 windows). Flags:\n          c1>=3, c2>=0.5, c3>=0.1, c4=1, weight 2 each -> c = flags/4.\nImplementation: IF models are trained once on clean data per window size; attack windows\nare scored by models trained before the attack, so their scores equal a per-run retrain;\ninjected windows are only left out of later training sets.\nThreshold per model: on seeds 0+2 (3 intensities each), the threshold with false alarms\n<= 1.75 per day that detects the most sessions (ties: lower median latency). Reported on seed 1.",
+ "W30": {
+  "active_windows": 756455,
+  "models": {
+   "A-win": {
+    "theta": 0.93,
+    "validation": {
+     "detected_of_120": 12,
+     "latency_median_min": 9.847505899270375,
+     "false_alarms_per_day": 1.7216404886561953
+    },
+    "test_seed1": {
+     "rendah": {
+      "detected": 0,
+      "of": 20,
+      "latency_median_min": null,
+      "latency_p90_min": null,
+      "false_alarms_per_day": 1.7225130890052356,
+      "latencies_min": []
+     },
+     "sedang": {
+      "detected": 1,
+      "of": 20,
+      "latency_median_min": 18.032918735345206,
+      "latency_p90_min": 18.032918735345206,
+      "false_alarms_per_day": 1.7225130890052356,
+      "latencies_min": [
+       18.0
+      ]
+     },
+     "tinggi": {
+      "detected": 4,
+      "of": 20,
+      "latency_median_min": 21.266352572043736,
+      "latency_p90_min": 24.28030954837799,
+      "false_alarms_per_day": 1.7225130890052356,
+      "latencies_min": [
+       18.7,
+       23.8,
+       18.0,
+       24.5
+      ]
+     }
+    }
+   },
+   "X4-win": {
+    "theta": 0.73,
+    "validation": {
+     "detected_of_120": 50,
+     "latency_median_min": 42.68328670859337,
+     "false_alarms_per_day": 1.5267015706806282
+    },
+    "test_seed1": {
+     "rendah": {
+      "detected": 10,
+      "of": 20,
+      "latency_median_min": 48.38451986908913,
+      "latency_p90_min": 115.11133321324982,
+      "false_alarms_per_day": 1.5267015706806282,
+      "latencies_min": [
+       19.0,
+       42.4,
+       48.7,
+       158.5,
+       95.5,
+       59.4,
+       110.3,
+       48.0,
+       38.9,
+       18.0
+      ]
+     },
+     "sedang": {
+      "detected": 10,
+      "of": 20,
+      "latency_median_min": 45.22014946937561,
+      "latency_p90_min": 81.81584820151328,
+      "false_alarms_per_day": 1.5267015706806282,
+      "latencies_min": [
+       79.0,
+       42.4,
+       18.7,
+       95.5,
+       80.3,
+       48.0,
+       54.5,
+       38.9,
+       7.7,
+       13.0
+      ]
+     },
+     "tinggi": {
+      "detected": 12,
+      "of": 20,
+      "latency_median_min": 43.97477557659149,
+      "latency_p90_min": 125.19331897497177,
+      "false_alarms_per_day": 1.5267015706806282,
+      "latencies_min": [
+       49.0,
+       12.4,
+       128.5,
+       157.9,
+       95.5,
+       59.4,
+       20.3,
+       18.0,
+       54.5,
+       38.9,
+       37.7,
+       13.0
+      ]
+     }
+    }
+   }
+  }
+ },
+ "W15": {
+  "active_windows": 1206946,
+  "models": {
+   "A-win": {
+    "theta": 0.999,
+    "validation": {
+     "detected_of_120": 5,
+     "latency_median_min": 0.02481997013092041,
+     "false_alarms_per_day": 1.5015706806282723
+    },
+    "test_seed1": {
+     "rendah": {
+      "detected": 1,
+      "of": 20,
+      "latency_median_min": 59.41618945201238,
+      "latency_p90_min": 59.41618945201238,
+      "false_alarms_per_day": 1.5020942408376963,
+      "latencies_min": [
+       59.4
+      ]
+     },
+     "sedang": {
+      "detected": 0,
+      "of": 20,
+      "latency_median_min": null,
+      "latency_p90_min": null,
+      "false_alarms_per_day": 1.5020942408376963,
+      "latencies_min": []
+     },
+     "tinggi": {
+      "detected": 0,
+      "of": 20,
+      "latency_median_min": null,
+      "latency_p90_min": null,
+      "false_alarms_per_day": 1.5020942408376963,
+      "latencies_min": []
+     }
+    }
+   },
+   "X4-win": {
+    "theta": 0.74,
+    "validation": {
+     "detected_of_120": 49,
+     "latency_median_min": 27.750270271301268,
+     "false_alarms_per_day": 1.562303664921466
+    },
+    "test_seed1": {
+     "rendah": {
+      "detected": 11,
+      "of": 20,
+      "latency_median_min": 59.41618945201238,
+      "latency_p90_min": 112.8617797811826,
+      "false_alarms_per_day": 1.5649214659685864,
+      "latencies_min": [
+       64.0,
+       27.4,
+       33.7,
+       143.5,
+       112.9,
+       59.4,
+       95.3,
+       3.0,
+       23.9,
+       63.0,
+       37.7
+      ]
+     },
+     "sedang": {
+      "detected": 12,
+      "of": 20,
+      "latency_median_min": 28.440560392538707,
+      "latency_p90_min": 79.00971990625065,
+      "false_alarms_per_day": 1.5649214659685864,
+      "latencies_min": [
+       49.0,
+       12.4,
+       18.7,
+       107.8,
+       52.9,
+       80.5,
+       65.3,
+       18.0,
+       23.9,
+       33.0,
+       7.7,
+       13.0
+      ]
+     },
+     "tinggi": {
+      "detected": 12,
+      "of": 20,
+      "latency_median_min": 18.884381167093913,
+      "latency_p90_min": 69.32503637154898,
+      "false_alarms_per_day": 1.5649214659685864,
+      "latencies_min": [
+       19.0,
+       12.4,
+       18.7,
+       67.9,
+       140.5,
+       20.3,
+       3.0,
+       69.5,
+       38.9,
+       18.0,
+       7.7,
+       13.0
+      ]
+     }
+    }
+   }
+  }
+ }
+}

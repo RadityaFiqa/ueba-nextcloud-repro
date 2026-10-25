@@ -1,0 +1,609 @@
+{
+ "meta": "K3-b v2 (pipeline/SPEC_K3_window_v2.md, fixed 2026-10-24 before running).\nModels A-win, X4-win (unchanged), X5-base, X5-acc, X5-full on 30- and 60-min windows.\nTuning on seeds 0+2 (budget <= 1.75 false alarms/day); main test on unseen seeds 3-9\n(420 sessions); seed 1 reported separately (already seen).",
+ "W30": {
+  "K": 3,
+  "suppress_windows": 8,
+  "models": {
+   "A-win": {
+    "theta": 0.93,
+    "validation": {
+     "detected_of_120": 12,
+     "latency_median_min": 9.847505899270375,
+     "false_alarms_per_day": 1.7216404886561953
+    },
+    "test_seeds_3_9": {
+     "detected": 45,
+     "of": 420,
+     "latency_median_min": 27.523447910944622,
+     "latency_p90_min": 34.84914445877075,
+     "false_alarms_per_day": 1.7216903515332835,
+     "per_level": {
+      "rendah": {
+       "detected": 6,
+       "of": 140,
+       "latency_median_min": 31.149082952737807
+      },
+      "sedang": {
+       "detected": 9,
+       "of": 140,
+       "latency_median_min": 30.911918600400288
+      },
+      "tinggi": {
+       "detected": 30,
+       "of": 140,
+       "latency_median_min": 26.316975446542102
+      }
+     }
+    },
+    "seed1": {
+     "detected": 5,
+     "of": 60,
+     "latency_median_min": 18.73612100283305,
+     "latency_p90_min": 24.21120591878891,
+     "false_alarms_per_day": 1.7225130890052356,
+     "per_level": {
+      "rendah": {
+       "detected": 0,
+       "of": 20,
+       "latency_median_min": null
+      },
+      "sedang": {
+       "detected": 1,
+       "of": 20,
+       "latency_median_min": 18.032918735345206
+      },
+      "tinggi": {
+       "detected": 4,
+       "of": 20,
+       "latency_median_min": 21.266352572043736
+      }
+     }
+    }
+   },
+   "X4-win": {
+    "theta": 0.73,
+    "validation": {
+     "detected_of_120": 50,
+     "latency_median_min": 42.68328670859337,
+     "false_alarms_per_day": 1.5267015706806282
+    },
+    "test_seeds_3_9": {
+     "detected": 195,
+     "of": 420,
+     "latency_median_min": 51.5358614842097,
+     "latency_p90_min": 107.82410714705784,
+     "false_alarms_per_day": 1.5261530790326603,
+     "per_level": {
+      "rendah": {
+       "detected": 59,
+       "of": 140,
+       "latency_median_min": 61.40103176832199
+      },
+      "sedang": {
+       "detected": 60,
+       "of": 140,
+       "latency_median_min": 53.60691009163857
+      },
+      "tinggi": {
+       "detected": 76,
+       "of": 140,
+       "latency_median_min": 39.73229484756787
+      }
+     }
+    },
+    "seed1": {
+     "detected": 32,
+     "of": 60,
+     "latency_median_min": 48.032918735345206,
+     "latency_p90_min": 108.81584820151332,
+     "false_alarms_per_day": 1.5267015706806282,
+     "per_level": {
+      "rendah": {
+       "detected": 10,
+       "of": 20,
+       "latency_median_min": 48.38451986908913
+      },
+      "sedang": {
+       "detected": 10,
+       "of": 20,
+       "latency_median_min": 45.22014946937561
+      },
+      "tinggi": {
+       "detected": 12,
+       "of": 20,
+       "latency_median_min": 43.97477557659149
+      }
+     }
+    }
+   },
+   "X5-base": {
+    "theta": 0.74,
+    "validation": {
+     "detected_of_120": 66,
+     "latency_median_min": 42.61630314588547,
+     "false_alarms_per_day": 1.5481675392670156
+    },
+    "test_seeds_3_9": {
+     "detected": 217,
+     "of": 420,
+     "latency_median_min": 43.55236735343933,
+     "latency_p90_min": 93.36734331448874,
+     "false_alarms_per_day": 1.5465469957616553,
+     "per_level": {
+      "rendah": {
+       "detected": 62,
+       "of": 140,
+       "latency_median_min": 57.54792633255323
+      },
+      "sedang": {
+       "detected": 65,
+       "of": 140,
+       "latency_median_min": 43.95583672920863
+      },
+      "tinggi": {
+       "detected": 90,
+       "of": 140,
+       "latency_median_min": 37.03406151334444
+      }
+     }
+    },
+    "seed1": {
+     "detected": 36,
+     "of": 60,
+     "latency_median_min": 56.95190494457881,
+     "latency_p90_min": 147.50395075082778,
+     "false_alarms_per_day": 1.5474694589877835,
+     "per_level": {
+      "rendah": {
+       "detected": 9,
+       "of": 20,
+       "latency_median_min": 77.78420087893804
+      },
+      "sedang": {
+       "detected": 13,
+       "of": 20,
+       "latency_median_min": 54.48762043714523
+      },
+      "tinggi": {
+       "detected": 14,
+       "of": 20,
+       "latency_median_min": 48.49842614730199
+      }
+     }
+    }
+   },
+   "X5-acc": {
+    "theta": 1.92,
+    "validation": {
+     "detected_of_120": 80,
+     "latency_median_min": 77.49525121251742,
+     "false_alarms_per_day": 1.6229493891797555
+    },
+    "test_seeds_3_9": {
+     "detected": 242,
+     "of": 420,
+     "latency_median_min": 76.44649045467376,
+     "latency_p90_min": 100.76041745026909,
+     "false_alarms_per_day": 1.6221889803041631,
+     "per_level": {
+      "rendah": {
+       "detected": 60,
+       "of": 140,
+       "latency_median_min": 78.78476414879162
+      },
+      "sedang": {
+       "detected": 77,
+       "of": 140,
+       "latency_median_min": 76.27567595640818
+      },
+      "tinggi": {
+       "detected": 105,
+       "of": 140,
+       "latency_median_min": 76.35811479489008
+      }
+     }
+    },
+    "seed1": {
+     "detected": 42,
+     "of": 60,
+     "latency_median_min": 78.88438116709392,
+     "latency_p90_min": 110.16571694771449,
+     "false_alarms_per_day": 1.6228621291448517,
+     "per_level": {
+      "rendah": {
+       "detected": 10,
+       "of": 20,
+       "latency_median_min": 78.38451986908913
+      },
+      "sedang": {
+       "detected": 15,
+       "of": 20,
+       "latency_median_min": 79.03264133135478
+      },
+      "tinggi": {
+       "detected": 17,
+       "of": 20,
+       "latency_median_min": 80.29161423842112
+      }
+     }
+    }
+   },
+   "X5-full": {
+    "theta": 1.8,
+    "validation": {
+     "detected_of_120": 102,
+     "latency_median_min": 77.6240447640419,
+     "false_alarms_per_day": 1.6539267015706807
+    },
+    "test_seeds_3_9": {
+     "detected": 309,
+     "of": 420,
+     "latency_median_min": 76.27567595640818,
+     "latency_p90_min": 97.83069314479825,
+     "false_alarms_per_day": 1.6531787584143605,
+     "per_level": {
+      "rendah": {
+       "detected": 85,
+       "of": 140,
+       "latency_median_min": 78.06358219385147
+      },
+      "sedang": {
+       "detected": 100,
+       "of": 140,
+       "latency_median_min": 75.76126528382301
+      },
+      "tinggi": {
+       "detected": 124,
+       "of": 140,
+       "latency_median_min": 74.3307742357254
+      }
+     }
+    },
+    "seed1": {
+     "detected": 49,
+     "of": 60,
+     "latency_median_min": 78.73612100283304,
+     "latency_p90_min": 108.28568355083466,
+     "false_alarms_per_day": 1.6535776614310647,
+     "per_level": {
+      "rendah": {
+       "detected": 15,
+       "of": 20,
+       "latency_median_min": 79.03264133135478
+      },
+      "sedang": {
+       "detected": 15,
+       "of": 20,
+       "latency_median_min": 78.73612100283304
+      },
+      "tinggi": {
+       "detected": 19,
+       "of": 20,
+       "latency_median_min": 78.0329187353452
+      }
+     }
+    }
+   }
+  },
+  "sign_tests_seeds_3_9": {
+   "X5-full vs X4-win": {
+    "only_X5full": 122,
+    "only_X4-win": 8,
+    "p_value": 2.5509356165601166e-27
+   },
+   "X5-full vs A-win": {
+    "only_X5full": 267,
+    "only_A-win": 3,
+    "p_value": 3.45860628895029e-75
+   },
+   "X5-full vs X5-acc": {
+    "only_X5full": 67,
+    "only_X5-acc": 0,
+    "p_value": 1.3552527156068805e-20
+   }
+  }
+ },
+ "W60": {
+  "K": 2,
+  "suppress_windows": 4,
+  "models": {
+   "A-win": {
+    "theta": 0.89,
+    "validation": {
+     "detected_of_120": 28,
+     "latency_median_min": 54.713002568483354,
+     "false_alarms_per_day": 1.7400523560209422
+    },
+    "test_seeds_3_9": {
+     "detected": 108,
+     "of": 420,
+     "latency_median_min": 48.26713981628418,
+     "latency_p90_min": 62.985220540761944,
+     "false_alarms_per_day": 1.7403639990027424,
+     "per_level": {
+      "rendah": {
+       "detected": 14,
+       "of": 140,
+       "latency_median_min": 49.297520420948665
+      },
+      "sedang": {
+       "detected": 36,
+       "of": 140,
+       "latency_median_min": 50.74857202569643
+      },
+      "tinggi": {
+       "detected": 58,
+       "of": 140,
+       "latency_median_min": 46.99988034566243
+      }
+     }
+    },
+    "seed1": {
+     "detected": 10,
+     "of": 60,
+     "latency_median_min": 31.17470010916392,
+     "latency_p90_min": 48.2587882856528,
+     "false_alarms_per_day": 1.7408376963350785,
+     "per_level": {
+      "rendah": {
+       "detected": 1,
+       "of": 20,
+       "latency_median_min": 48.032918735345206
+      },
+      "sedang": {
+       "detected": 3,
+       "of": 20,
+       "latency_median_min": 24.48762043714523
+      },
+      "tinggi": {
+       "detected": 6,
+       "of": 20,
+       "latency_median_min": 31.17470010916392
+      }
+     }
+    }
+   },
+   "X4-win": {
+    "theta": 0.72,
+    "validation": {
+     "detected_of_120": 52,
+     "latency_median_min": 72.61630314588547,
+     "false_alarms_per_day": 1.4143106457242585
+    },
+    "test_seeds_3_9": {
+     "detected": 182,
+     "of": 420,
+     "latency_median_min": 66.79430447816848,
+     "latency_p90_min": 131.1999689745903,
+     "false_alarms_per_day": 1.4148342059336823,
+     "per_level": {
+      "rendah": {
+       "detected": 46,
+       "of": 140,
+       "latency_median_min": 84.55413311918576
+      },
+      "sedang": {
+       "detected": 63,
+       "of": 140,
+       "latency_median_min": 68.23963849544525
+      },
+      "tinggi": {
+       "detected": 73,
+       "of": 140,
+       "latency_median_min": 60.91191860040029
+      }
+     }
+    },
+    "seed1": {
+     "detected": 27,
+     "of": 60,
+     "latency_median_min": 67.65362291733423,
+     "latency_p90_min": 152.7944255836805,
+     "false_alarms_per_day": 1.4144851657940662,
+     "per_level": {
+      "rendah": {
+       "detected": 6,
+       "of": 20,
+       "latency_median_min": 33.532780033349994
+      },
+      "sedang": {
+       "detected": 11,
+       "of": 20,
+       "latency_median_min": 72.40738020340602
+      },
+      "tinggi": {
+       "detected": 10,
+       "of": 20,
+       "latency_median_min": 68.28526636958122
+      }
+     }
+    }
+   },
+   "X5-base": {
+    "theta": 0.73,
+    "validation": {
+     "detected_of_120": 65,
+     "latency_median_min": 73.56703872680664,
+     "false_alarms_per_day": 1.56195462478185
+    },
+    "test_seeds_3_9": {
+     "detected": 225,
+     "of": 420,
+     "latency_median_min": 70.92802040576935,
+     "latency_p90_min": 137.6276878205935,
+     "false_alarms_per_day": 1.5603839441535778,
+     "per_level": {
+      "rendah": {
+       "detected": 51,
+       "of": 140,
+       "latency_median_min": 88.32872897386551
+      },
+      "sedang": {
+       "detected": 82,
+       "of": 140,
+       "latency_median_min": 74.56497681538264
+      },
+      "tinggi": {
+       "detected": 92,
+       "of": 140,
+       "latency_median_min": 63.85064782500267
+      }
+     }
+    },
+    "seed1": {
+     "detected": 36,
+     "of": 60,
+     "latency_median_min": 78.73612100283304,
+     "latency_p90_min": 129.88358550270397,
+     "false_alarms_per_day": 1.5603839441535776,
+     "per_level": {
+      "rendah": {
+       "detected": 7,
+       "of": 20,
+       "latency_median_min": 108.0329187353452
+      },
+      "sedang": {
+       "detected": 15,
+       "of": 20,
+       "latency_median_min": 70.85026118357976
+      },
+      "tinggi": {
+       "detected": 14,
+       "of": 20,
+       "latency_median_min": 73.82651541233062
+      }
+     }
+    }
+   },
+   "X5-acc": {
+    "theta": 1.295,
+    "validation": {
+     "detected_of_120": 85,
+     "latency_median_min": 94.89571454922358,
+     "false_alarms_per_day": 1.745113438045375
+    },
+    "test_seeds_3_9": {
+     "detected": 261,
+     "of": 420,
+     "latency_median_min": 97.45651759703954,
+     "latency_p90_min": 136.97384626070658,
+     "false_alarms_per_day": 1.7454500124657193,
+     "per_level": {
+      "rendah": {
+       "detected": 61,
+       "of": 140,
+       "latency_median_min": 100.5664441426595
+      },
+      "sedang": {
+       "detected": 92,
+       "of": 140,
+       "latency_median_min": 97.03406151334445
+      },
+      "tinggi": {
+       "detected": 108,
+       "of": 140,
+       "latency_median_min": 97.03406151334445
+      }
+     }
+    },
+    "seed1": {
+     "detected": 42,
+     "of": 60,
+     "latency_median_min": 86.95190494457881,
+     "latency_p90_min": 130.85026118357976,
+     "false_alarms_per_day": 1.7439790575916227,
+     "per_level": {
+      "rendah": {
+       "detected": 11,
+       "of": 20,
+       "latency_median_min": 79.03264133135478
+      },
+      "sedang": {
+       "detected": 14,
+       "of": 20,
+       "latency_median_min": 86.95190494457881
+      },
+      "tinggi": {
+       "detected": 17,
+       "of": 20,
+       "latency_median_min": 89.41618945201238
+      }
+     }
+    }
+   },
+   "X5-full": {
+    "theta": 1.257,
+    "validation": {
+     "detected_of_120": 99,
+     "latency_median_min": 92.07096703449885,
+     "false_alarms_per_day": 1.7385689354275742
+    },
+    "test_seeds_3_9": {
+     "detected": 288,
+     "of": 420,
+     "latency_median_min": 97.54925950368245,
+     "latency_p90_min": 135.03495316505433,
+     "false_alarms_per_day": 1.7400149588631262,
+     "per_level": {
+      "rendah": {
+       "detected": 71,
+       "of": 140,
+       "latency_median_min": 98.52736096779505
+      },
+      "sedang": {
+       "detected": 99,
+       "of": 140,
+       "latency_median_min": 97.24537914594015
+      },
+      "tinggi": {
+       "detected": 118,
+       "of": 140,
+       "latency_median_min": 97.35094837148984
+      }
+     }
+    },
+    "seed1": {
+     "detected": 45,
+     "of": 60,
+     "latency_median_min": 84.48762043714524,
+     "latency_p90_min": 130.85026118357976,
+     "false_alarms_per_day": 1.7389179755671902,
+     "per_level": {
+      "rendah": {
+       "detected": 13,
+       "of": 20,
+       "latency_median_min": 84.48762043714524
+      },
+      "sedang": {
+       "detected": 14,
+       "of": 20,
+       "latency_median_min": 86.95190494457881
+      },
+      "tinggi": {
+       "detected": 18,
+       "of": 20,
+       "latency_median_min": 84.14210228919984
+      }
+     }
+    }
+   }
+  },
+  "sign_tests_seeds_3_9": {
+   "X5-full vs X4-win": {
+    "only_X5full": 114,
+    "only_X4-win": 8,
+    "p_value": 3.889971944821776e-25
+   },
+   "X5-full vs A-win": {
+    "only_X5full": 195,
+    "only_A-win": 15,
+    "p_value": 4.1073643702002843e-41
+   },
+   "X5-full vs X5-acc": {
+    "only_X5full": 27,
+    "only_X5-acc": 0,
+    "p_value": 1.4901161193847656e-08
+   }
+  }
+ }
+}

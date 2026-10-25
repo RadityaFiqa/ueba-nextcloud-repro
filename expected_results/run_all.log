@@ -1,0 +1,137 @@
+=== P1 history length W
+  IF seed=0 W=14 cols=AF sched=rolling: 70s
+  IF seed=2 W=14 cols=AF sched=rolling: 71s
+  [P1 W=14] val theta=0.6 pooled TPR=0.650 FPR=0.1115
+  IF seed=0 W=30 cols=AF sched=rolling: 70s
+  IF seed=2 W=30 cols=AF sched=rolling: 71s
+  [P1 W=30] val theta=0.55 pooled TPR=0.625 FPR=0.1436
+  IF seed=0 W=60 cols=AF sched=rolling: 72s
+  IF seed=2 W=60 cols=AF sched=rolling: 70s
+  [P1 W=60] val theta=0.55 pooled TPR=0.625 FPR=0.1413
+locked W = 14
+=== P2 weights
+  [P2 w=(0.6, 0.3, 0.1)] val theta=0.6 pooled TPR=0.650 FPR=0.1115
+  [P2 w=(0.5, 0.4, 0.1)] val theta=0.55 pooled TPR=0.650 FPR=0.0994
+  [P2 w=(0.7, 0.2, 0.1)] val theta=0.6 pooled TPR=0.625 FPR=0.1579
+  [P2 w=(0.5, 0.3, 0.2)] val theta=0.55 pooled TPR=0.650 FPR=0.1104
+locked weights = (0.5, 0.4, 0.1)
+=== P3 decay lambda
+  [P3 lam=0.3] val theta=0.55 pooled TPR=0.650 FPR=0.0988
+  [P3 lam=0.5] val theta=0.55 pooled TPR=0.650 FPR=0.0994
+  [P3 lam=0.7] val theta=0.55 pooled TPR=0.675 FPR=0.1001
+locked lambda = 0.3
+=== P4 theta_R curve
+  [P4 D] val theta=0.55 pooled TPR=0.650 FPR=0.0988
+  IF seed=1 W=14 cols=AF sched=rolling: 72s
+=== P5 flag thresholds +-20% (validation, locked theta)
+P5 FPR range: 0.0963-0.1028, TPR range: 0.650-0.675
+=== E2_B
+  IF seed=0 W=14 cols=A sched=rolling: 75s
+  IF seed=2 W=14 cols=A sched=rolling: 69s
+  [E2_B] val theta=0.52 pooled TPR=0.375 FPR=0.2258
+  IF seed=1 W=14 cols=A sched=rolling: 70s
+  TEST seed1: TP=5 FN=15 FP=9211 TN=31416 TPR=0.250 TPR_adj=0.350 FPR=0.2267 R=0.4774 alerts/day=4.83
+=== E3_B+RS
+  [E3_B+RS] val theta=0.5 pooled TPR=0.425 FPR=0.1087
+  TEST seed1: TP=6 FN=14 FP=6807 TN=56020 TPR=0.300 TPR_adj=0.400 FPR=0.1083 R=0.1918 alerts/day=3.57
+=== E4_C
+  [E4_C] val theta=0.8 pooled TPR=0.650 FPR=0.1279
+  TEST seed1: TP=11 FN=9 FP=7829 TN=53463 TPR=0.550 TPR_adj=0.750 FPR=0.1277 R=0.2116 alerts/day=4.10
+=== E5_D
+  TEST seed1: TP=11 FN=9 FP=6490 TN=59169 TPR=0.550 TPR_adj=0.750 FPR=0.0988 R=0.1554 alerts/day=3.40
+=== R1_D-h
+  [R1_D-h] val theta=0.55 pooled TPR=0.700 FPR=0.1172
+  TEST seed1: TP=12 FN=8 FP=7551 TN=56997 TPR=0.600 TPR_adj=0.800 FPR=0.1170 R=0.1697 alerts/day=3.96
+=== R2_D-c
+  [R2_D-c] val theta=0.75 pooled TPR=0.575 FPR=0.1203
+  TEST seed1: TP=10 FN=10 FP=7168 TN=52695 TPR=0.500 TPR_adj=0.750 FPR=0.1197 R=0.2300 alerts/day=3.76
+=== R3_D-a
+  [R3_D-a] val theta=0.5 pooled TPR=0.350 FPR=0.0266
+  TEST seed1: TP=7 FN=13 FP=1960 TN=71823 TPR=0.350 TPR_adj=0.400 FPR=0.0266 R=0.0509 alerts/day=1.03
+=== R4_D-gate
+  [R4_D-gate] val theta=(np.float64(0.81), 0.25) pooled TPR=0.650 FPR=0.0791
+  TEST seed1: TP=13 FN=7 FP=5434 TN=63254 TPR=0.650 TPR_adj=0.750 FPR=0.0791 R=0.1164 alerts/day=2.85
+=== F1_C-Vol
+  IF seed=0 W=14 cols=['AF', [0]] sched=rolling: 71s
+  IF seed=2 W=14 cols=['AF', [0]] sched=rolling: 70s
+  [F1_C-Vol] val theta=0.74 pooled TPR=0.600 FPR=0.1620
+  IF seed=1 W=14 cols=['AF', [0]] sched=rolling: 70s
+  TEST seed1: TP=11 FN=9 FP=9258 TN=47651 TPR=0.550 TPR_adj=0.850 FPR=0.1627 R=0.2680 alerts/day=4.85
+=== F2_C-Mix
+  IF seed=0 W=14 cols=['AF', [1, 2]] sched=rolling: 72s
+  IF seed=2 W=14 cols=['AF', [1, 2]] sched=rolling: 72s
+  [F2_C-Mix] val theta=0.77 pooled TPR=0.650 FPR=0.1470
+  IF seed=1 W=14 cols=['AF', [1, 2]] sched=rolling: 72s
+  TEST seed1: TP=10 FN=10 FP=8686 TN=50249 TPR=0.500 TPR_adj=0.700 FPR=0.1474 R=0.2419 alerts/day=4.55
+=== F3_C-Time
+  IF seed=0 W=14 cols=['AF', [3, 4]] sched=rolling: 72s
+  IF seed=2 W=14 cols=['AF', [3, 4]] sched=rolling: 72s
+  [F3_C-Time] val theta=0.79 pooled TPR=0.600 FPR=0.1329
+  IF seed=1 W=14 cols=['AF', [3, 4]] sched=rolling: 72s
+  TEST seed1: TP=11 FN=9 FP=8094 TN=52235 TPR=0.550 TPR_adj=0.750 FPR=0.1342 R=0.2240 alerts/day=4.24
+=== F4_C-Res
+  IF seed=0 W=14 cols=['AF', [5]] sched=rolling: 71s
+  IF seed=2 W=14 cols=['AF', [5]] sched=rolling: 72s
+  [F4_C-Res] val theta=0.75 pooled TPR=0.525 FPR=0.1546
+  IF seed=1 W=14 cols=['AF', [5]] sched=rolling: 72s
+  TEST seed1: TP=9 FN=11 FP=8907 TN=48652 TPR=0.450 TPR_adj=0.750 FPR=0.1547 R=0.2596 alerts/day=4.67
+=== F5_C-Sens
+  IF seed=0 W=14 cols=['AF', [6]] sched=rolling: 72s
+  IF seed=2 W=14 cols=['AF', [6]] sched=rolling: 71s
+  [F5_C-Sens] val theta=0.75 pooled TPR=0.650 FPR=0.1610
+  IF seed=1 W=14 cols=['AF', [6]] sched=rolling: 71s
+  TEST seed1: TP=12 FN=8 FP=9236 TN=48448 TPR=0.600 TPR_adj=0.850 FPR=0.1601 R=0.2580 alerts/day=4.84
+=== F6_C-Burst
+  IF seed=0 W=14 cols=['AF', [7]] sched=rolling: 71s
+  IF seed=2 W=14 cols=['AF', [7]] sched=rolling: 71s
+  [F6_C-Burst] val theta=0.72 pooled TPR=0.650 FPR=0.1757
+  IF seed=1 W=14 cols=['AF', [7]] sched=rolling: 71s
+  TEST seed1: TP=9 FN=11 FP=9692 TN=45822 TPR=0.450 TPR_adj=0.800 FPR=0.1746 R=0.2859 alerts/day=5.08
+=== F7_D-k1
+  [F7_D-k1] val theta=0.6 pooled TPR=0.725 FPR=0.0783
+  TEST seed1: TP=12 FN=8 FP=5283 TN=62688 TPR=0.600 TPR_adj=0.700 FPR=0.0777 R=0.1256 alerts/day=2.77
+=== F7_D-k2
+  [F7_D-k2] val theta=0.55 pooled TPR=0.725 FPR=0.1050
+  TEST seed1: TP=10 FN=10 FP=6893 TN=58857 TPR=0.500 TPR_adj=0.650 FPR=0.1048 R=0.1542 alerts/day=3.61
+=== F7_D-k3
+  [F7_D-k3] val theta=0.5 pooled TPR=0.700 FPR=0.1371
+  TEST seed1: TP=12 FN=8 FP=8235 TN=51991 TPR=0.600 TPR_adj=0.900 FPR=0.1367 R=0.2253 alerts/day=4.32
+=== F7_D-k4
+  [F7_D-k4] val theta=0.5 pooled TPR=0.600 FPR=0.1341
+  TEST seed1: TP=9 FN=11 FP=8000 TN=52113 TPR=0.450 TPR_adj=0.750 FPR=0.1331 R=0.2268 alerts/day=4.19
+=== F7_D-k5
+  [F7_D-k5] val theta=0.5 pooled TPR=0.700 FPR=0.1271
+  TEST seed1: TP=11 FN=9 FP=7754 TN=53336 TPR=0.550 TPR_adj=0.850 FPR=0.1269 R=0.2142 alerts/day=4.07
+=== D1_D-static
+  IF seed=0 W=14 cols=AF sched=static: 1s
+  IF seed=2 W=14 cols=AF sched=static: 1s
+  [D1_D-static] val theta=0.5 pooled TPR=0.700 FPR=0.1232
+  IF seed=1 W=14 cols=AF sched=static: 1s
+  TEST seed1: TP=12 FN=8 FP=7494 TN=53284 TPR=0.600 TPR_adj=0.850 FPR=0.1233 R=0.2182 alerts/day=3.93
+=== D2_D-daily
+  IF seed=0 W=14 cols=AF sched=daily: 499s
+  IF seed=2 W=14 cols=AF sched=daily: 493s
+  [D2_D-daily] val theta=0.55 pooled TPR=0.650 FPR=0.0991
+  IF seed=1 W=14 cols=AF sched=daily: 495s
+  TEST seed1: TP=12 FN=8 FP=6508 TN=59134 TPR=0.600 TPR_adj=0.750 FPR=0.0991 R=0.1556 alerts/day=3.41
+=== D3_D-noUserMode
+  [D3_D-noUserMode] val theta=0.6 pooled TPR=0.650 FPR=0.0892
+  TEST seed1: TP=12 FN=8 FP=6897 TN=70596 TPR=0.600 TPR_adj=0.600 FPR=0.0890 R=0.0032 alerts/day=3.62
+=== E1 baseline A
+  A: TP=13 FP=3337 TPR=0.650 FPR=0.0461 alerts/day=1.75
+=== E6 McNemar + bootstrap
+  {'pairs': 'E5_D vs A', 'false_alarms_only_E5_D': 4782, 'false_alarms_only_A': 1345, 'p_value_exact': np.float64(0.0), 'dFPR': np.float64(0.05278404044993322), 'ci95': [0.04340365002721908, 0.062235556957925806]}
+  {'pairs': 'E5_D vs E4_C', 'false_alarms_only_E5_D': 925, 'false_alarms_only_E4_C': 2755, 'p_value_exact': np.float64(9.388372347821816e-209), 'dFPR': np.float64(-0.028888792468586236), 'ci95': [-0.036364053407206796, -0.021840202310093124]}
+  {'pairs': 'E4_C vs E2_B', 'false_alarms_only_E4_C': 870, 'false_alarms_only_E2_B': 5189, 'p_value_exact': np.float64(0.0), 'dFPR': np.float64(-0.09898832609201225), 'ci95': [-0.11903697517533647, -0.0788939848522145]}
+=== H1 / K1 / K2
+  {'K1_easy(sim<0.3)': {'n': 6, 'A_tp': 4, 'D_tp': 3, 'A_tp_adj': 4, 'D_tp_adj': 5, 'A_TPR': 0.6666666666666666, 'D_TPR': 0.5}, 'K2_hard(sim>=0.3)': {'n': 14, 'A_tp': 9, 'D_tp': 8, 'A_tp_adj': 9, 'D_tp_adj': 10, 'A_TPR': 0.6428571428571429, 'D_TPR': 0.5714285714285714}}
+=== H2 / H3
+  [('k4+k5', 8), ('k2+k3', 7), ('k1+k5', 6), ('k2+k4', 5), ('k5', 4), ('k3+k4', 3), ('k2+k3+k4', 2), ('k1+k2+k5', 2), ('k1+k4+k5', 2), ('k2', 2), ('k1', 1), ('k3+k5', 1), ('k1+k2+k4+k5', 1), ('k1+k3+k5', 1), ('k2+k3+k5', 1), ('k4', 1), ('k2+k3+k4+k5', 1), ('k3+k4+k5', 1), ('k2+k5', 1)]
+  {'A': {'alerts': 3350, 'alerts_per_day': 1.7539267015706805, 'TP': 13, 'Prec': 0.003880597014925373}, 'D': {'alerts': 6501, 'alerts_per_day': 3.4036649214659684, 'TP': 11, 'Prec': 0.0023059185242121443}}
+=== V5 / V6 / V7
+  {'users': 100, 'feature_values_changed_on_or_before_t': 0, 'feature_values_changed_after_t (sanity, should be >0)': 30963, 'pass': True}
+  V6 columns: 57 banned present: []
+  IF seed=3 W=14 cols=AF sched=rolling: 71s
+  IF seed=3 W=14 cols=AF sched=rolling: 72s
+  V7 identical: True
+ALL_DONE in 4032s

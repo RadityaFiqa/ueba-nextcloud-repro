@@ -1,0 +1,56 @@
+{
+ "V1": {
+  "all": {
+   "events": 50522931,
+   "user_days": 83147,
+   "pct_events": {
+    "type": 100.0,
+    "time": 100.0,
+    "path": 45.1738,
+    "any_path_field": 45.2659,
+    "isLocalIP": 0.5472,
+    "location": 0.2422,
+    "role": 12.1967
+   },
+   "pct_user_days": {
+    "type": 100.0,
+    "time": 100.0,
+    "path": 65.312,
+    "any_path_field": 66.4967,
+    "isLocalIP": 14.5237,
+    "location": 10.0725,
+    "role": 36.1348
+   }
+  },
+  "uidType=name": {
+   "events": 50377040,
+   "user_days": 72725,
+   "pct_events": {
+    "type": 100.0,
+    "time": 100.0,
+    "path": 45.0975,
+    "any_path_field": 45.1691,
+    "isLocalIP": 0.2591,
+    "location": 0.0105,
+    "role": 12.232
+   },
+   "pct_user_days": {
+    "type": 100.0,
+    "time": 100.0,
+    "path": 67.5614,
+    "any_path_field": 67.7869,
+    "isLocalIP": 2.2743,
+    "location": 0.9392,
+    "role": 41.3132
+   }
+  }
+ },
+ "V2": {
+  "raw_rows": 50522931,
+  "summary_event_sum": 50522931,
+  "summary_rows": 293823,
+  "difference": 0,
+  "expected": 50522931,
+  "pass": true
+ }
+}
