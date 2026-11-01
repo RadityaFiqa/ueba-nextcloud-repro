@@ -1,0 +1,40 @@
+E1 IF Personal {'theta': np.float64(0.99), 'swap_TP_val': 15, 'hijack_TP_val': 62, 'fp_per_day_val': 1.247}
+E1 Model Utama {'theta': np.float64(0.67), 'swap_TP_val': 26, 'hijack_TP_val': 73, 'fp_per_day_val': 1.707}
+E2 Pembanding Landauer swap {'TP': 13, 'TP_adj': 13, 'TPR': 0.65, 'FPR': 0.0461, 'TPR_adj': 0.65, 'FPR_adj': 0.0514, 'fp_per_day': 1.7471} | hijack {'TP': 9, 'TP_adj': 11, 'per_level': {'rendah': 3, 'sedang': 2, 'tinggi': 4}, 'FPR': 0.0459, 'FPR_adj': 0.0511}
+E2 IF Personal swap {'TP': 7, 'TP_adj': 7, 'TPR': 0.35, 'FPR': 0.032, 'TPR_adj': 0.35, 'FPR_adj': 0.0326, 'fp_per_day': 1.2304} | hijack {'TP': 25, 'TP_adj': 25, 'per_level': {'rendah': 7, 'sedang': 8, 'tinggi': 10}, 'FPR': 0.0324, 'FPR_adj': 0.0331}
+E2 Model Utama swap {'TP': 14, 'TP_adj': 15, 'TPR': 0.7, 'FPR': 0.0456, 'TPR_adj': 0.75, 'FPR_adj': 0.055, 'fp_per_day': 1.7147} | hijack {'TP': 24, 'TP_adj': 25, 'per_level': {'rendah': 7, 'sedang': 7, 'tinggi': 10}, 'FPR': 0.0454, 'FPR_adj': 0.0543}
+STAT IF Personal {'swap_deteksi': {'hanya_model': 0, 'hanya_landauer': 6, 'p': 0.03125}, 'hijack_deteksi': {'hanya_model': 16, 'hanya_landauer': 0, 'p': 3.0517578125e-05}, 'swap_alarm_palsu': {'hanya_model': 1712, 'hanya_landauer': 2650, 'p': 4.997645704213402e-46}, 'selisih_FPR_vs_landauer': {'nilai': -0.0133, 'ci95': [-0.0194, -0.0083]}}
+STAT Model Utama {'swap_deteksi': {'hanya_model': 2, 'hanya_landauer': 1, 'p': 1.0}, 'hijack_deteksi': {'hanya_model': 17, 'hanya_landauer': 2, 'p': 0.000728607177734375}, 'swap_alarm_palsu': {'hanya_model': 1985, 'hanya_landauer': 2013, 'p': 0.6693742508992859}, 'selisih_FPR_vs_landauer': {'nilai': -0.0004, 'ci95': [-0.0041, 0.0028]}}
+ABL Model Utama lengkap                           {'swap_TP': 14, 'swap_TP_adj': 15, 'swap_TPR': 0.7, 'swap_FPR': 0.0456, 'swap_TPR_adj': 0.75, 'swap_FPR_adj': 0.055, 'fp_per_day': 1.715, 'hijack_TP': 24, 'hijack_TP_adj': 25}
+ABL tanpa tanda k1                                {'swap_TP': 12, 'swap_TP_adj': 13, 'swap_TPR': 0.6, 'swap_FPR': 0.0496, 'swap_TPR_adj': 0.65, 'swap_FPR_adj': 0.0608, 'fp_per_day': 1.854, 'hijack_TP': 31, 'hijack_TP_adj': 35}
+ABL tanpa tanda k2                                {'swap_TP': 11, 'swap_TP_adj': 13, 'swap_TPR': 0.55, 'swap_FPR': 0.0492, 'swap_TPR_adj': 0.65, 'swap_FPR_adj': 0.0585, 'fp_per_day': 1.841, 'hijack_TP': 32, 'hijack_TP_adj': 36}
+ABL tanpa tanda k3                                {'swap_TP': 13, 'swap_TP_adj': 14, 'swap_TPR': 0.65, 'swap_FPR': 0.0473, 'swap_TPR_adj': 0.7, 'swap_FPR_adj': 0.0565, 'fp_per_day': 1.774, 'hijack_TP': 24, 'hijack_TP_adj': 27}
+ABL tanpa tanda k4                                {'swap_TP': 12, 'swap_TP_adj': 14, 'swap_TPR': 0.6, 'swap_FPR': 0.05, 'swap_TPR_adj': 0.7, 'swap_FPR_adj': 0.064, 'fp_per_day': 1.863, 'hijack_TP': 23, 'hijack_TP_adj': 24}
+ABL tanpa tanda k5                                {'swap_TP': 14, 'swap_TP_adj': 15, 'swap_TPR': 0.7, 'swap_FPR': 0.0447, 'swap_TPR_adj': 0.75, 'swap_FPR_adj': 0.0543, 'fp_per_day': 1.682, 'hijack_TP': 25, 'hijack_TP_adj': 26}
+ABL tanpa tanda k6                                {'swap_TP': 13, 'swap_TP_adj': 14, 'swap_TPR': 0.65, 'swap_FPR': 0.0468, 'swap_TPR_adj': 0.7, 'swap_FPR_adj': 0.0543, 'fp_per_day': 1.76, 'hijack_TP': 29, 'hijack_TP_adj': 31}
+ABL tanpa fitur jumlah (F1, k1)                   {'swap_TP': 12, 'swap_TP_adj': 13, 'swap_TPR': 0.6, 'swap_FPR': 0.0494, 'swap_TPR_adj': 0.65, 'swap_FPR_adj': 0.0609, 'fp_per_day': 1.848, 'hijack_TP': 31, 'hijack_TP_adj': 35}
+ABL tanpa fitur pola (F2-F3, k2)                  {'swap_TP': 10, 'swap_TP_adj': 12, 'swap_TPR': 0.5, 'swap_FPR': 0.049, 'swap_TPR_adj': 0.6, 'swap_FPR_adj': 0.058, 'fp_per_day': 1.838, 'hijack_TP': 32, 'hijack_TP_adj': 36}
+ABL tanpa fitur waktu (F4-F5, k3)                 {'swap_TP': 13, 'swap_TP_adj': 14, 'swap_TPR': 0.65, 'swap_FPR': 0.0473, 'swap_TPR_adj': 0.7, 'swap_FPR_adj': 0.0562, 'fp_per_day': 1.777, 'hijack_TP': 25, 'hijack_TP_adj': 28}
+ABL tanpa fitur folder (F6, k4)                   {'swap_TP': 12, 'swap_TP_adj': 14, 'swap_TPR': 0.6, 'swap_FPR': 0.05, 'swap_TPR_adj': 0.7, 'swap_FPR_adj': 0.0646, 'fp_per_day': 1.86, 'hijack_TP': 23, 'hijack_TP_adj': 24}
+ABL tanpa fitur tindakan berisiko (F7)            {'swap_TP': 13, 'swap_TP_adj': 14, 'swap_TPR': 0.65, 'swap_FPR': 0.0449, 'swap_TPR_adj': 0.7, 'swap_FPR_adj': 0.0527, 'fp_per_day': 1.693, 'hijack_TP': 24, 'hijack_TP_adj': 26}
+ABL tanpa fitur lonjakan singkat (F8)             {'swap_TP': 13, 'swap_TP_adj': 14, 'swap_TPR': 0.65, 'swap_FPR': 0.0402, 'swap_TPR_adj': 0.7, 'swap_FPR_adj': 0.048, 'fp_per_day': 1.521, 'hijack_TP': 24, 'hijack_TP_adj': 26}
+ABL tanpa fitur 49 jumlah relatif                 {'swap_TP': 14, 'swap_TP_adj': 15, 'swap_TPR': 0.7, 'swap_FPR': 0.0501, 'swap_TPR_adj': 0.75, 'swap_FPR_adj': 0.0619, 'fp_per_day': 1.869, 'hijack_TP': 24, 'hijack_TP_adj': 25}
+ABL Model Utama lengkap                           {'swap_TP': 14, 'swap_TP_adj': 15, 'swap_TPR': 0.7, 'swap_FPR': 0.0456, 'swap_TPR_adj': 0.75, 'swap_FPR_adj': 0.055, 'fp_per_day': 1.715, 'hijack_TP': 24, 'hijack_TP_adj': 25}
+ABL IF Personal (skor a saja, batas sendiri)      {'swap_TP': 7, 'swap_TP_adj': 7, 'swap_TPR': 0.35, 'swap_FPR': 0.032, 'swap_TPR_adj': 0.35, 'swap_FPR_adj': 0.0326, 'fp_per_day': 1.2304, 'hijack_TP': 25, 'hijack_TP_adj': 25}
+ABL tanpa skor konteks c                          {'swap_TP': 12, 'swap_TP_adj': 16, 'swap_TPR': 0.6, 'swap_FPR': 0.223, 'swap_TPR_adj': 0.8, 'swap_FPR_adj': 0.3036, 'fp_per_day': 6.155, 'hijack_TP': 49, 'hijack_TP_adj': 58}
+ABL tanpa riwayat h                               {'swap_TP': 14, 'swap_TP_adj': 15, 'swap_TPR': 0.7, 'swap_FPR': 0.0649, 'swap_TPR_adj': 0.75, 'swap_FPR_adj': 0.0744, 'fp_per_day': 2.39, 'hijack_TP': 35, 'hijack_TP_adj': 36}
+ABL tanpa kalibrasi per pengguna (a mentah)       {'swap_TP': 13, 'swap_TP_adj': 14, 'swap_TPR': 0.65, 'swap_FPR': 0.0471, 'swap_TPR_adj': 0.7, 'swap_FPR_adj': 0.0615, 'fp_per_day': 1.759, 'hijack_TP': 25, 'hijack_TP_adj': 29}
+ABL jumlah mentah, bukan relatif                  {'swap_TP': 10, 'swap_TP_adj': 12, 'swap_TPR': 0.5, 'swap_FPR': 0.0424, 'swap_TPR_adj': 0.6, 'swap_FPR_adj': 0.0506, 'fp_per_day': 1.602, 'hijack_TP': 24, 'hijack_TP_adj': 25}
+E5 curve rows 128
+E6 seed 0 Landauer 10 0.0459 | Model Utama 14 0.0451
+E6 seed 1 Landauer 13 0.0461 | Model Utama 14 0.0456
+E6 seed 2 Landauer 12 0.0463 | Model Utama 12 0.0456
+E6 seed 3 Landauer 6 0.046 | Model Utama 5 0.0457
+E6 seed 4 Landauer 10 0.046 | Model Utama 14 0.0456
+E6 seed 5 Landauer 9 0.046 | Model Utama 12 0.0452
+E6 seed 6 Landauer 7 0.046 | Model Utama 14 0.0454
+E6 seed 7 Landauer 7 0.0459 | Model Utama 12 0.0452
+E6 seed 8 Landauer 8 0.046 | Model Utama 10 0.0458
+E6 seed 9 Landauer 7 0.0461 | Model Utama 11 0.0457
+E6 total {'0-9': {'Pembanding Landauer': {'TP': 89, 'TP_adj': 96, 'P': 200, 'FPR_rata2': 0.046, 'FPR_adj_rata2': 0.0513}, 'Model Utama': {'TP': 118, 'TP_adj': 127, 'P': 200, 'FPR_rata2': 0.0455, 'FPR_adj_rata2': 0.0546}, 'wilcoxon_p_satu_arah': 0.0059}, '3-9': {'Pembanding Landauer': {'TP': 54, 'TP_adj': 60, 'P': 140, 'FPR_rata2': 0.046, 'FPR_adj_rata2': 0.0513}, 'Model Utama': {'TP': 78, 'TP_adj': 85, 'P': 140, 'FPR_rata2': 0.0455, 'FPR_adj_rata2': 0.0547}, 'wilcoxon_p_satu_arah': 0.0156}, '1 dan 3-9': {'Pembanding Landauer': {'TP': 67, 'TP_adj': 73, 'P': 160, 'FPR_rata2': 0.046, 'FPR_adj_rata2': 0.0513}, 'Model Utama': {'TP': 92, 'TP_adj': 100, 'P': 160, 'FPR_rata2': 0.0455, 'FPR_adj_rata2': 0.0547}, 'wilcoxon_p_satu_arah': 0.0117}}
+DONE

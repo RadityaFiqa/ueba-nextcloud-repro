@@ -9,6 +9,43 @@ hijack is evaluated per day and per 15/30/60-minute window.
 All results reported in the thesis are in `expected_results/`. Running `run_all.sh`
 recreates the same files in `results/`.
 
+## Final thesis and paper numbers (branch `Eligible-Test`)
+
+The final version of the thesis and the paper uses three models, all user-relative (no labels,
+no IP, no comparison with other users' behaviour):
+
+| Name in the thesis | Code name | What it is |
+|---|---|---|
+| **Pembanding Landauer** | A | Landauer et al. (2022): nearest-day L1 distance of the 49 daily counts, alarm if > 0.6 |
+| **IF Personal** | X2 | Isolation Forest on 49 user-relative counts (`log1p(x) − log1p(median of the user's last 14 active days)`) + F1–F8; score ranked against the user's own previous 30 days (`a`); alarm if `a ≥ θ` |
+| **Model Utama** | X4 + k1 two-sided + k6 | IF Personal + risk score `R = 0.5·a + 0.4·c + 0.1·h`, `c` = raised flag weights / 10 with k1 `|F1|≥3` (2), k2 (2), k3 (1), k4 new folders (2), k5 risky action or burst (1), k6 order of activities `trans_js ≥ 0.5` (2); `h = 0.3·h_prev + 0.7·R_prev` |
+
+Thresholds are chosen on seeds 0 + 2 only (uid swaps and generated session hijacks): false
+alarms ≤ 1.75/day (Landauer's budget), then the highest mean of swap TPR and hijack TPR. Seed 1
+is the main test, seeds 3–9 the robustness check (uid swap). Every table reports TPR, FPR,
+TPR_adj and FPR_adj (adaptation days included).
+
+```bash
+bash src/step12_final.sh
+```
+
+Step 12 needs steps 1–4 (Parquet, user stats, daily tables). It writes `results/final.json`
+and `results/final_curve.csv` (~1 h on 2 CPUs / 8 GB). Expected output:
+`expected_results/final.json` and `expected_results/final_curve.csv`.
+
+| Thesis / paper | Key in `final.json` (or file) |
+|---|---|
+| Tabel 4.2 thresholds | `E1_thresholds` |
+| Tabel 4.3 RM1 ablation, Gambar 4.1 | `E3_RM1` |
+| Tabel 4.4 RM2 ablation | `E4_RM2` |
+| Tabel 4.5–4.6 seed 1, both attacks | `E2_seed1` |
+| Tabel 4.7 McNemar and bootstrap | `E2_stats` |
+| Gambar 4.2–4.3 threshold and operating curves | `final_curve.csv` |
+| Tabel 4.8, Gambar 4.4 seeds 0–9 | `E6_10_putaran` |
+
+Exploratory scripts used while designing the model (not needed for the final numbers) are kept
+in `tools/explore/` for transparency; each one states in its header what it tested.
+
 ## Requirements
 
 - Linux (tested on Ubuntu 24.04), Python 3.12.3, 2 CPUs, 8 GB RAM, ~15 GB free disk
@@ -54,6 +91,7 @@ To start from a given step (e.g. after steps 1–6 are done): `PY=.venv/bin/pyth
 | 9 | `src/step09_test2_k3_daily_A_D_X4_hybrid.py` | Test 2: K3 session hijack per day, **A, Hybrid, D, X4** | `results/k3_day.json` |
 | 10 | `src/step10_test3_k3_window_Awin_X4win.py` | Test 3: K3 per 15/30-minute window, **A-win, X4-win** | `results/k3_window.json` |
 | 11 | `src/step11_test3b_k3_window_X5.py` | Test 3b: K3 per 30/60-minute window, **X5** vs A-win, X4-win | `results/k3_window2.json` |
+| 12 | `src/step12_final.sh` (`step12_final_prep.py`, `step12_final_eval.py`) | **final thesis numbers**: Landauer, IF Personal, Model Utama; RM1/RM2 ablations, seed 1 both attacks, threshold curves, seeds 0–9 | `results/final.json`, `results/final_curve.csv` |
 
 Every script starts with a header that says which step, test and model it belongs to, its
 input and output, and how to run it. Shared code is in the `lib_*.py` files:
@@ -64,6 +102,7 @@ input and output, and how to run it. Shared code is in the `lib_*.py` files:
 | `src/lib_k3_attack.py` | K3 session-hijack attack generator |
 | `src/lib_models.py` | features F1–F8, Isolation Forest, flags k1–k5, risk score, Landauer detector, evaluator |
 | `src/lib_k3_window.py` | window features and alert logic of X4-win and X5 |
+| `src/lib_order_features.py` | order-of-activities feature `trans_js` (flag k6) and other user-relative extras |
 | `src/config.py` | data, work and result paths |
 
 Each test was specified before it was run: `docs/SPEC_model_v2.md` (Test 1),

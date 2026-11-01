@@ -1,0 +1,723 @@
+{
+ "meta": "STEP 12b - FINAL experiment, evaluation (reads work/final/*.npz from step12_final_prep.py).\n\nModels (all user-relative, no labels, no IP):\n  Pembanding Landauer  nearest-day distance of the 49 daily counts, alarm if > 0.6 (Landauer et al., 2022)\n  IF Personal          Isolation Forest on 49 user-relative counts + F1..F8, score ranked against the user's own\n                       previous 30 days (a); alarm if a >= theta\n  Model Utama          IF Personal + risk score R = .5a + .4c + .1h (lambda 0.3), c = raised flag weights / 10:\n                       k1 |F1|>=3 (2), k2 F2>=.5 or F3>=.2 (2), k3 F4>=.3 (1), k4 F6>=.5 (2),\n                       k5 F7>=.1 or F8>=3 (1), k6 trans_js>=.5 (2); alarm if R >= theta\nThreshold rule (validation seeds 0+2, uid swaps and session hijacks): false alarms <= 1.75/day (Landauer's\nbudget) on the validation swaps, then highest mean of (swap TPR, hijack TPR); ties -> lower FPR.\nMetrics: TPR, FPR (Landauer's protocol: adaptation days not scored), TPR_adj (attack day in adaptation still\ncounts when the decision was an alarm), FPR_adj (false alarms on every scored-or-adaptation normal day).\nOutputs results/final.json and results/final_curve.csv:\n  E1 thresholds, E2 seed 1 (both attacks, McNemar, bootstrap), E3 RM1 ablation, E4 RM2 ablation,\n  E5 threshold curves, E6 uid swap on seeds 0-9 (Wilcoxon on 3-9).\n  Run: python -W ignore src/step12_final_eval.py",
+ "E1_thresholds": {
+  "IF Personal": {
+   "theta": 0.99,
+   "swap_TP_val": 15,
+   "hijack_TP_val": 62,
+   "fp_per_day_val": 1.247
+  },
+  "Model Utama": {
+   "theta": 0.67,
+   "swap_TP_val": 26,
+   "hijack_TP_val": 73,
+   "fp_per_day_val": 1.707
+  }
+ },
+ "E2_seed1": {
+  "Pembanding Landauer": {
+   "theta": 0.6,
+   "swap": {
+    "TP": 13,
+    "TP_adj": 13,
+    "P": 20,
+    "TPR": 0.65,
+    "TPR_adj": 0.65,
+    "FP": 3337,
+    "TN": 69112,
+    "FPR": 0.0461,
+    "FP_adj": 3992,
+    "FPR_adj": 0.0514,
+    "fp_per_day": 1.7471
+   },
+   "hijack": {
+    "TP": 9,
+    "TP_adj": 11,
+    "P": 60,
+    "TPR": 0.15,
+    "TPR_adj": 0.1833,
+    "per_level": {
+     "rendah": 3,
+     "sedang": 2,
+     "tinggi": 4
+    },
+    "FPR": 0.0459,
+    "FPR_adj": 0.0511,
+    "fp_per_day": 1.74
+   }
+  },
+  "IF Personal": {
+   "theta": 0.99,
+   "swap": {
+    "TP": 7,
+    "TP_adj": 7,
+    "P": 20,
+    "TPR": 0.35,
+    "TPR_adj": 0.35,
+    "FP": 2350,
+    "TN": 71171,
+    "FPR": 0.032,
+    "FP_adj": 2531,
+    "FPR_adj": 0.0326,
+    "fp_per_day": 1.2304
+   },
+   "hijack": {
+    "TP": 25,
+    "TP_adj": 25,
+    "P": 60,
+    "TPR": 0.4167,
+    "TPR_adj": 0.4167,
+    "per_level": {
+     "rendah": 7,
+     "sedang": 8,
+     "tinggi": 10
+    },
+    "FPR": 0.0324,
+    "FPR_adj": 0.0331,
+    "fp_per_day": 1.247
+   }
+  },
+  "Model Utama": {
+   "theta": 0.67,
+   "swap": {
+    "TP": 14,
+    "TP_adj": 15,
+    "P": 20,
+    "TPR": 0.7,
+    "TPR_adj": 0.75,
+    "FP": 3275,
+    "TN": 68558,
+    "FPR": 0.0456,
+    "FP_adj": 4272,
+    "FPR_adj": 0.055,
+    "fp_per_day": 1.7147
+   },
+   "hijack": {
+    "TP": 24,
+    "TP_adj": 25,
+    "P": 60,
+    "TPR": 0.4,
+    "TPR_adj": 0.4167,
+    "per_level": {
+     "rendah": 7,
+     "sedang": 7,
+     "tinggi": 10
+    },
+    "FPR": 0.0454,
+    "FPR_adj": 0.0543,
+    "fp_per_day": 1.709
+   }
+  }
+ },
+ "E2_stats": {
+  "IF Personal": {
+   "swap_deteksi": {
+    "hanya_model": 0,
+    "hanya_landauer": 6,
+    "p": 0.03125
+   },
+   "hijack_deteksi": {
+    "hanya_model": 16,
+    "hanya_landauer": 0,
+    "p": 3.0517578125e-05
+   },
+   "swap_alarm_palsu": {
+    "hanya_model": 1712,
+    "hanya_landauer": 2650,
+    "p": 4.997645704213402e-46
+   },
+   "selisih_FPR_vs_landauer": {
+    "nilai": -0.0133,
+    "ci95": [
+     -0.0194,
+     -0.0083
+    ]
+   }
+  },
+  "Model Utama": {
+   "swap_deteksi": {
+    "hanya_model": 2,
+    "hanya_landauer": 1,
+    "p": 1.0
+   },
+   "hijack_deteksi": {
+    "hanya_model": 17,
+    "hanya_landauer": 2,
+    "p": 0.000728607177734375
+   },
+   "swap_alarm_palsu": {
+    "hanya_model": 1985,
+    "hanya_landauer": 2013,
+    "p": 0.6693742508992859
+   },
+   "selisih_FPR_vs_landauer": {
+    "nilai": -0.0004,
+    "ci95": [
+     -0.0041,
+     0.0028
+    ]
+   }
+  }
+ },
+ "E3_RM1": {
+  "Model Utama lengkap": {
+   "swap_TP": 14,
+   "swap_TP_adj": 15,
+   "swap_TPR": 0.7,
+   "swap_FPR": 0.0456,
+   "swap_TPR_adj": 0.75,
+   "swap_FPR_adj": 0.055,
+   "fp_per_day": 1.715,
+   "hijack_TP": 24,
+   "hijack_TP_adj": 25
+  },
+  "tanpa tanda k1": {
+   "swap_TP": 12,
+   "swap_TP_adj": 13,
+   "swap_TPR": 0.6,
+   "swap_FPR": 0.0496,
+   "swap_TPR_adj": 0.65,
+   "swap_FPR_adj": 0.0608,
+   "fp_per_day": 1.854,
+   "hijack_TP": 31,
+   "hijack_TP_adj": 35
+  },
+  "tanpa tanda k2": {
+   "swap_TP": 11,
+   "swap_TP_adj": 13,
+   "swap_TPR": 0.55,
+   "swap_FPR": 0.0492,
+   "swap_TPR_adj": 0.65,
+   "swap_FPR_adj": 0.0585,
+   "fp_per_day": 1.841,
+   "hijack_TP": 32,
+   "hijack_TP_adj": 36
+  },
+  "tanpa tanda k3": {
+   "swap_TP": 13,
+   "swap_TP_adj": 14,
+   "swap_TPR": 0.65,
+   "swap_FPR": 0.0473,
+   "swap_TPR_adj": 0.7,
+   "swap_FPR_adj": 0.0565,
+   "fp_per_day": 1.774,
+   "hijack_TP": 24,
+   "hijack_TP_adj": 27
+  },
+  "tanpa tanda k4": {
+   "swap_TP": 12,
+   "swap_TP_adj": 14,
+   "swap_TPR": 0.6,
+   "swap_FPR": 0.05,
+   "swap_TPR_adj": 0.7,
+   "swap_FPR_adj": 0.064,
+   "fp_per_day": 1.863,
+   "hijack_TP": 23,
+   "hijack_TP_adj": 24
+  },
+  "tanpa tanda k5": {
+   "swap_TP": 14,
+   "swap_TP_adj": 15,
+   "swap_TPR": 0.7,
+   "swap_FPR": 0.0447,
+   "swap_TPR_adj": 0.75,
+   "swap_FPR_adj": 0.0543,
+   "fp_per_day": 1.682,
+   "hijack_TP": 25,
+   "hijack_TP_adj": 26
+  },
+  "tanpa tanda k6": {
+   "swap_TP": 13,
+   "swap_TP_adj": 14,
+   "swap_TPR": 0.65,
+   "swap_FPR": 0.0468,
+   "swap_TPR_adj": 0.7,
+   "swap_FPR_adj": 0.0543,
+   "fp_per_day": 1.76,
+   "hijack_TP": 29,
+   "hijack_TP_adj": 31
+  },
+  "tanpa fitur jumlah (F1, k1)": {
+   "swap_TP": 12,
+   "swap_TP_adj": 13,
+   "swap_TPR": 0.6,
+   "swap_FPR": 0.0494,
+   "swap_TPR_adj": 0.65,
+   "swap_FPR_adj": 0.0609,
+   "fp_per_day": 1.848,
+   "hijack_TP": 31,
+   "hijack_TP_adj": 35
+  },
+  "tanpa fitur pola (F2-F3, k2)": {
+   "swap_TP": 10,
+   "swap_TP_adj": 12,
+   "swap_TPR": 0.5,
+   "swap_FPR": 0.049,
+   "swap_TPR_adj": 0.6,
+   "swap_FPR_adj": 0.058,
+   "fp_per_day": 1.838,
+   "hijack_TP": 32,
+   "hijack_TP_adj": 36
+  },
+  "tanpa fitur waktu (F4-F5, k3)": {
+   "swap_TP": 13,
+   "swap_TP_adj": 14,
+   "swap_TPR": 0.65,
+   "swap_FPR": 0.0473,
+   "swap_TPR_adj": 0.7,
+   "swap_FPR_adj": 0.0562,
+   "fp_per_day": 1.777,
+   "hijack_TP": 25,
+   "hijack_TP_adj": 28
+  },
+  "tanpa fitur folder (F6, k4)": {
+   "swap_TP": 12,
+   "swap_TP_adj": 14,
+   "swap_TPR": 0.6,
+   "swap_FPR": 0.05,
+   "swap_TPR_adj": 0.7,
+   "swap_FPR_adj": 0.0646,
+   "fp_per_day": 1.86,
+   "hijack_TP": 23,
+   "hijack_TP_adj": 24
+  },
+  "tanpa fitur tindakan berisiko (F7)": {
+   "swap_TP": 13,
+   "swap_TP_adj": 14,
+   "swap_TPR": 0.65,
+   "swap_FPR": 0.0449,
+   "swap_TPR_adj": 0.7,
+   "swap_FPR_adj": 0.0527,
+   "fp_per_day": 1.693,
+   "hijack_TP": 24,
+   "hijack_TP_adj": 26
+  },
+  "tanpa fitur lonjakan singkat (F8)": {
+   "swap_TP": 13,
+   "swap_TP_adj": 14,
+   "swap_TPR": 0.65,
+   "swap_FPR": 0.0402,
+   "swap_TPR_adj": 0.7,
+   "swap_FPR_adj": 0.048,
+   "fp_per_day": 1.521,
+   "hijack_TP": 24,
+   "hijack_TP_adj": 26
+  },
+  "tanpa fitur 49 jumlah relatif": {
+   "swap_TP": 14,
+   "swap_TP_adj": 15,
+   "swap_TPR": 0.7,
+   "swap_FPR": 0.0501,
+   "swap_TPR_adj": 0.75,
+   "swap_FPR_adj": 0.0619,
+   "fp_per_day": 1.869,
+   "hijack_TP": 24,
+   "hijack_TP_adj": 25
+  }
+ },
+ "E4_RM2": {
+  "Model Utama lengkap": {
+   "swap_TP": 14,
+   "swap_TP_adj": 15,
+   "swap_TPR": 0.7,
+   "swap_FPR": 0.0456,
+   "swap_TPR_adj": 0.75,
+   "swap_FPR_adj": 0.055,
+   "fp_per_day": 1.715,
+   "hijack_TP": 24,
+   "hijack_TP_adj": 25
+  },
+  "IF Personal (skor a saja, batas sendiri)": {
+   "swap_TP": 7,
+   "swap_TP_adj": 7,
+   "swap_TPR": 0.35,
+   "swap_FPR": 0.032,
+   "swap_TPR_adj": 0.35,
+   "swap_FPR_adj": 0.0326,
+   "fp_per_day": 1.2304,
+   "hijack_TP": 25,
+   "hijack_TP_adj": 25
+  },
+  "tanpa skor konteks c": {
+   "swap_TP": 12,
+   "swap_TP_adj": 16,
+   "swap_TPR": 0.6,
+   "swap_FPR": 0.223,
+   "swap_TPR_adj": 0.8,
+   "swap_FPR_adj": 0.3036,
+   "fp_per_day": 6.155,
+   "hijack_TP": 49,
+   "hijack_TP_adj": 58
+  },
+  "tanpa riwayat h": {
+   "swap_TP": 14,
+   "swap_TP_adj": 15,
+   "swap_TPR": 0.7,
+   "swap_FPR": 0.0649,
+   "swap_TPR_adj": 0.75,
+   "swap_FPR_adj": 0.0744,
+   "fp_per_day": 2.39,
+   "hijack_TP": 35,
+   "hijack_TP_adj": 36
+  },
+  "tanpa kalibrasi per pengguna (a mentah)": {
+   "swap_TP": 13,
+   "swap_TP_adj": 14,
+   "swap_TPR": 0.65,
+   "swap_FPR": 0.0471,
+   "swap_TPR_adj": 0.7,
+   "swap_FPR_adj": 0.0615,
+   "fp_per_day": 1.759,
+   "hijack_TP": 25,
+   "hijack_TP_adj": 29
+  },
+  "jumlah mentah, bukan relatif": {
+   "swap_TP": 10,
+   "swap_TP_adj": 12,
+   "swap_TPR": 0.5,
+   "swap_FPR": 0.0424,
+   "swap_TPR_adj": 0.6,
+   "swap_FPR_adj": 0.0506,
+   "fp_per_day": 1.602,
+   "hijack_TP": 24,
+   "hijack_TP_adj": 25
+  }
+ },
+ "E6_10_putaran": {
+  "per_putaran": {
+   "0": {
+    "Pembanding Landauer": {
+     "TP": 10,
+     "TP_adj": 10,
+     "P": 20,
+     "TPR": 0.5,
+     "TPR_adj": 0.5,
+     "FP": 3329,
+     "TN": 69133,
+     "FPR": 0.0459,
+     "FP_adj": 3981,
+     "FPR_adj": 0.0512,
+     "fp_per_day": 1.7429
+    },
+    "Model Utama": {
+     "TP": 14,
+     "TP_adj": 15,
+     "P": 20,
+     "TPR": 0.7,
+     "TPR_adj": 0.75,
+     "FP": 3245,
+     "TN": 68643,
+     "FPR": 0.0451,
+     "FP_adj": 4217,
+     "FPR_adj": 0.0542,
+     "fp_per_day": 1.699
+    }
+   },
+   "1": {
+    "Pembanding Landauer": {
+     "TP": 13,
+     "TP_adj": 13,
+     "P": 20,
+     "TPR": 0.65,
+     "TPR_adj": 0.65,
+     "FP": 3337,
+     "TN": 69112,
+     "FPR": 0.0461,
+     "FP_adj": 3992,
+     "FPR_adj": 0.0514,
+     "fp_per_day": 1.7471
+    },
+    "Model Utama": {
+     "TP": 14,
+     "TP_adj": 15,
+     "P": 20,
+     "TPR": 0.7,
+     "TPR_adj": 0.75,
+     "FP": 3275,
+     "TN": 68558,
+     "FPR": 0.0456,
+     "FP_adj": 4272,
+     "FPR_adj": 0.055,
+     "fp_per_day": 1.7147
+    }
+   },
+   "2": {
+    "Pembanding Landauer": {
+     "TP": 12,
+     "TP_adj": 13,
+     "P": 20,
+     "TPR": 0.6,
+     "TPR_adj": 0.65,
+     "FP": 3353,
+     "TN": 69075,
+     "FPR": 0.0463,
+     "FP_adj": 4011,
+     "FPR_adj": 0.0516,
+     "fp_per_day": 1.7555
+    },
+    "Model Utama": {
+     "TP": 12,
+     "TP_adj": 12,
+     "P": 20,
+     "TPR": 0.6,
+     "TPR_adj": 0.6,
+     "FP": 3277,
+     "TN": 68577,
+     "FPR": 0.0456,
+     "FP_adj": 4255,
+     "FPR_adj": 0.0547,
+     "fp_per_day": 1.7157
+    }
+   },
+   "3": {
+    "Pembanding Landauer": {
+     "TP": 6,
+     "TP_adj": 7,
+     "P": 20,
+     "TPR": 0.3,
+     "TPR_adj": 0.35,
+     "FP": 3335,
+     "TN": 69120,
+     "FPR": 0.046,
+     "FP_adj": 3991,
+     "FPR_adj": 0.0513,
+     "fp_per_day": 1.7461
+    },
+    "Model Utama": {
+     "TP": 5,
+     "TP_adj": 7,
+     "P": 20,
+     "TPR": 0.25,
+     "TPR_adj": 0.35,
+     "FP": 3286,
+     "TN": 68575,
+     "FPR": 0.0457,
+     "FP_adj": 4254,
+     "FPR_adj": 0.0547,
+     "fp_per_day": 1.7204
+    }
+   },
+   "4": {
+    "Pembanding Landauer": {
+     "TP": 10,
+     "TP_adj": 10,
+     "P": 20,
+     "TPR": 0.5,
+     "TPR_adj": 0.5,
+     "FP": 3330,
+     "TN": 69131,
+     "FPR": 0.046,
+     "FP_adj": 3979,
+     "FPR_adj": 0.0512,
+     "fp_per_day": 1.7435
+    },
+    "Model Utama": {
+     "TP": 14,
+     "TP_adj": 15,
+     "P": 20,
+     "TPR": 0.7,
+     "TPR_adj": 0.75,
+     "FP": 3279,
+     "TN": 68560,
+     "FPR": 0.0456,
+     "FP_adj": 4266,
+     "FPR_adj": 0.0549,
+     "fp_per_day": 1.7168
+    }
+   },
+   "5": {
+    "Pembanding Landauer": {
+     "TP": 9,
+     "TP_adj": 9,
+     "P": 20,
+     "TPR": 0.45,
+     "TPR_adj": 0.45,
+     "FP": 3331,
+     "TN": 69124,
+     "FPR": 0.046,
+     "FP_adj": 3987,
+     "FPR_adj": 0.0513,
+     "fp_per_day": 1.744
+    },
+    "Model Utama": {
+     "TP": 12,
+     "TP_adj": 14,
+     "P": 20,
+     "TPR": 0.6,
+     "TPR_adj": 0.7,
+     "FP": 3246,
+     "TN": 68639,
+     "FPR": 0.0452,
+     "FP_adj": 4222,
+     "FPR_adj": 0.0543,
+     "fp_per_day": 1.6995
+    }
+   },
+   "6": {
+    "Pembanding Landauer": {
+     "TP": 7,
+     "TP_adj": 7,
+     "P": 20,
+     "TPR": 0.35,
+     "TPR_adj": 0.35,
+     "FP": 3334,
+     "TN": 69127,
+     "FPR": 0.046,
+     "FP_adj": 3983,
+     "FPR_adj": 0.0512,
+     "fp_per_day": 1.7455
+    },
+    "Model Utama": {
+     "TP": 14,
+     "TP_adj": 14,
+     "P": 20,
+     "TPR": 0.7,
+     "TPR_adj": 0.7,
+     "FP": 3264,
+     "TN": 68601,
+     "FPR": 0.0454,
+     "FP_adj": 4240,
+     "FPR_adj": 0.0545,
+     "fp_per_day": 1.7089
+    }
+   },
+   "7": {
+    "Pembanding Landauer": {
+     "TP": 7,
+     "TP_adj": 9,
+     "P": 20,
+     "TPR": 0.35,
+     "TPR_adj": 0.45,
+     "FP": 3329,
+     "TN": 69130,
+     "FPR": 0.0459,
+     "FP_adj": 3986,
+     "FPR_adj": 0.0513,
+     "fp_per_day": 1.7429
+    },
+    "Model Utama": {
+     "TP": 12,
+     "TP_adj": 13,
+     "P": 20,
+     "TPR": 0.6,
+     "TPR_adj": 0.65,
+     "FP": 3246,
+     "TN": 68635,
+     "FPR": 0.0452,
+     "FP_adj": 4225,
+     "FPR_adj": 0.0543,
+     "fp_per_day": 1.6995
+    }
+   },
+   "8": {
+    "Pembanding Landauer": {
+     "TP": 8,
+     "TP_adj": 9,
+     "P": 20,
+     "TPR": 0.4,
+     "TPR_adj": 0.45,
+     "FP": 3335,
+     "TN": 69118,
+     "FPR": 0.046,
+     "FP_adj": 3992,
+     "FPR_adj": 0.0514,
+     "fp_per_day": 1.7461
+    },
+    "Model Utama": {
+     "TP": 10,
+     "TP_adj": 10,
+     "P": 20,
+     "TPR": 0.5,
+     "TPR_adj": 0.5,
+     "FP": 3292,
+     "TN": 68529,
+     "FPR": 0.0458,
+     "FP_adj": 4288,
+     "FPR_adj": 0.0552,
+     "fp_per_day": 1.7236
+    }
+   },
+   "9": {
+    "Pembanding Landauer": {
+     "TP": 7,
+     "TP_adj": 9,
+     "P": 20,
+     "TPR": 0.35,
+     "TPR_adj": 0.45,
+     "FP": 3340,
+     "TN": 69112,
+     "FPR": 0.0461,
+     "FP_adj": 3994,
+     "FPR_adj": 0.0514,
+     "fp_per_day": 1.7487
+    },
+    "Model Utama": {
+     "TP": 11,
+     "TP_adj": 12,
+     "P": 20,
+     "TPR": 0.55,
+     "TPR_adj": 0.6,
+     "FP": 3283,
+     "TN": 68573,
+     "FPR": 0.0457,
+     "FP_adj": 4251,
+     "FPR_adj": 0.0547,
+     "fp_per_day": 1.7188
+    }
+   }
+  },
+  "total": {
+   "0-9": {
+    "Pembanding Landauer": {
+     "TP": 89,
+     "TP_adj": 96,
+     "P": 200,
+     "FPR_rata2": 0.046,
+     "FPR_adj_rata2": 0.0513
+    },
+    "Model Utama": {
+     "TP": 118,
+     "TP_adj": 127,
+     "P": 200,
+     "FPR_rata2": 0.0455,
+     "FPR_adj_rata2": 0.0546
+    },
+    "wilcoxon_p_satu_arah": 0.0059
+   },
+   "3-9": {
+    "Pembanding Landauer": {
+     "TP": 54,
+     "TP_adj": 60,
+     "P": 140,
+     "FPR_rata2": 0.046,
+     "FPR_adj_rata2": 0.0513
+    },
+    "Model Utama": {
+     "TP": 78,
+     "TP_adj": 85,
+     "P": 140,
+     "FPR_rata2": 0.0455,
+     "FPR_adj_rata2": 0.0547
+    },
+    "wilcoxon_p_satu_arah": 0.0156
+   },
+   "1 dan 3-9": {
+    "Pembanding Landauer": {
+     "TP": 67,
+     "TP_adj": 73,
+     "P": 160,
+     "FPR_rata2": 0.046,
+     "FPR_adj_rata2": 0.0513
+    },
+    "Model Utama": {
+     "TP": 92,
+     "TP_adj": 100,
+     "P": 160,
+     "FPR_rata2": 0.0455,
+     "FPR_adj_rata2": 0.0547
+    },
+    "wilcoxon_p_satu_arah": 0.0117
+   }
+  }
+ }
+}
