@@ -1,30 +1,19 @@
-"""LIBRARY for the daily models (imported as `lib`).
-  Where each model lives:
-    features F1-F8 ............ compute_features()            (models C, D, X1-X4)
-    Set A (event-type counts) . design_matrix()               (models B, C, D)
-    Isolation Forest score a .. iforest_a()                   (B, C, D, X1-X4)
-    context flags k1-k5, c .... flags_c()                     (B+RS, D, X3, X4)
-    risk score R, history h ... risk()                        (B+RS, D, X3, X4)
-    relative Set A ............ relative_A()                  (X1-X4)
-    per-user calibration ...... calibrate_per_user()          (X2, X4)
-    other detectors ........... make_detector(), rolling_a()  (step 8 benchmark)
-    Landauer detector / hybrid  hybrid_detect()               (A with w=(1,0,0), Hybrid)
-    Landauer evaluation ....... evaluate(), metrics()         (all models)
-    uid swap at day level ..... seed_swaps(), relabel()       (Test 1)
+"""LIBRARY for the three models of the thesis (imported as `lib`).
+  base data and uid swap ..... load_base(), seed_swaps(), relabel(), labels_from_swaps()
+  context features F1-F8 ..... compute_features()        (IF Personal, Model Utama)
+  49 user-relative counts .... relative_A()              (IF Personal, Model Utama)
+  Isolation Forest score ..... iforest_a()               (IF Personal, Model Utama)
+  per-user ranking a ......... calibrate_per_user()      (IF Personal, Model Utama)
+  risk score R, history h .... risk()                    (Model Utama; flags k1-k6 are in step12_final_eval.py)
+  Landauer detector .......... landauer_detect()         (Pembanding Landauer)
+  Landauer evaluation ........ evaluate(), metrics()     (all models)
 
-------------------------------------------------------------------------
-Model v2 library: features F1-F8, rolling global Isolation Forest, risk
-scoring (flags k1-k5, c, h, R) and Landauer-protocol evaluation.
-
-Implements docs/SPEC_model_v2.md (approved 2026-10-22).
-Implementation details not fixed by the spec:
+Implementation details:
   * hour-of-day uses 5-minute bins (F4 percentiles at 5-min resolution);
   * F8 peak uses fixed 10-minute bins (pairs of 5-min bins);
-  * F5 and F8 use the same robust z (clip +-10) as F1.
+  * F1, F5 and F8 use a robust z (median / MAD, clip +-10).
 """
 import math
-import os
-import sys
 from collections import Counter, deque
 
 import duckdb
@@ -41,15 +30,6 @@ NBIN = 288   # 5-minute bins per day
 #   F4 share of events outside usual hours  F8 burst: busiest 10 minutes (robust z)
 FNAMES = ['F1_vol_z', 'F2_type_js', 'F3_new_type_share', 'F4_off_hours', 'F5_span_z',
           'F6_new_prefix_share', 'F7_sens_excess', 'F8_burst_z']
-# Context flags k1-k5 -> c = sum of weights of raised flags / 8 (used by B+RS, D, X3, X4):
-#   k1 volume spike, k2 behaviour shift, k3 off-hours, k4 new resources, k5 sensitive/burst
-FLAGS = {  # name: (weight, [(feature index, threshold), ...] OR-ed)
-    'k1': (2, [(0, 3.0)]),
-    'k2': (2, [(1, 0.5), (2, 0.2)]),
-    'k3': (1, [(3, 0.3)]),
-    'k4': (2, [(5, 0.5)]),
-    'k5': (1, [(6, 0.1), (7, 3.0)]),
-}
 
 
 # ---------------------------------------------------------------- base data
@@ -200,34 +180,20 @@ def compute_features(user_recs, W=30, M=5):
                 A=np.array(A, dtype=np.float32), F=np.array(F, dtype=np.float32))
 
 
-def design_matrix(feat, colset):
-    """colset: 'A' (49 type counts) or 'AF' (A + F1-F8) or ('AF', [drop F indices])."""
-    if colset == 'A':
-        return feat['A']
-    drop = [] if colset == 'AF' else list(colset[1])
-    keep = [i for i in range(8) if i not in drop]
-    return np.hstack([feat['A'], feat['F'][:, keep]])
-
-
 # ---------------------------------------------------------------- Isolation Forest
-def iforest_a(feat, X, schedule='rolling', T=60, step=7, first_after=7, random_state=0):
-    """a in [0,1]: percentile of anomaly among the training window's scores. NaN = no model yet.
+def iforest_a(feat, X, T=60, step=7, first_after=7, random_state=0):
+    """a_raw in [0,1]: share of the training window's days that are less anomalous than the day. NaN = no model yet.
 
-    Models B, C, D, X1-X4: ONE global Isolation Forest for all users, trained on the
-    previous T = 60 days and retrained every `step` = 7 days ('rolling'); 'static' trains
-    once (D1), 'daily' retrains every day (D2)."""
+    ONE Isolation Forest (200 trees, 256 samples) on the user-relative inputs of all users, trained on the
+    previous T = 60 days and retrained every `step` = 7 days. Every input row is already relative to its
+    own user's history, so the model compares deviations, not users."""
     d = feat['d']
     valid = ~feat['first']  # first days have no features
     a = np.full(len(d), np.nan)
     d0 = int(d.min())
-    if schedule == 'static':
-        fits = [(d0 + T, d0, 10 ** 9)]                      # train [d0, d0+T), score everything after
-    else:
-        st = 1 if schedule == 'daily' else step
-        fits = [(r, max(d0, r - T), r + st) for r in range(d0 + first_after, int(d.max()) + 1, st)]
-    for r, lo, hi in fits:
-        tr = valid & (d >= lo) & (d < r)
-        te = valid & (d >= r) & (d < hi)
+    for r in range(d0 + first_after, int(d.max()) + 1, step):
+        tr = valid & (d >= max(d0, r - T)) & (d < r)
+        te = valid & (d >= r) & (d < r + step)
         if tr.sum() < 2 or te.sum() == 0:
             continue
         m = IsolationForest(n_estimators=200, max_samples=min(256, int(tr.sum())),
@@ -239,104 +205,10 @@ def iforest_a(feat, X, schedule='rolling', T=60, step=7, first_after=7, random_s
     return a
 
 
-def _peruser_one(Xu, N, M, step, random_state):
-    """a for one user's rows (row 0 = first day, no features)."""
-    n = len(Xu)
-    a = np.full(n, np.nan)
-    # need >= M feature days (rows 1..i-1) before day i; retrain every `step` active days,
-    # and the model stays fixed in between, so each block is scored in one call
-    for i in range(1 + M, n, step):
-        lo = max(1, i - N)
-        tr = Xu[lo:i]
-        model = IsolationForest(n_estimators=200, max_samples=min(256, len(tr)),
-                                random_state=random_state, n_jobs=1).fit(tr)
-        s_all = model.score_samples(np.vstack([tr, Xu[i:i + step]]))  # one call: training + block
-        s_tr, s = np.sort(s_all[:len(tr)]), s_all[len(tr):]
-        a[i:i + step] = (len(s_tr) - np.searchsorted(s_tr, s, side='right')) / len(s_tr)
-    return a
-
-
-def iforest_a_peruser(feat, X, N=30, M=5, step=7, random_state=0, n_jobs=2):
-    """Exploratory (post-hoc): one Isolation Forest per user, trained on that user's
-    previous N active days (strictly before day t), retrained every `step` active days.
-    Days with < M prior feature days get NaN (no model -> forced training day)."""
-    from joblib import Parallel, delayed
-    uid = feat['uid']
-    starts = np.flatnonzero(feat['first'])
-    bounds = list(zip(starts, list(starts[1:]) + [len(uid)]))
-    jobs = [(s, e) for s, e in bounds if e - s > 1 + M]
-    outs = Parallel(n_jobs=n_jobs, batch_size=16)(
-        delayed(_peruser_one)(X[s:e], N, M, step, random_state) for s, e in jobs)
-    a = np.full(len(uid), np.nan)
-    for (s, e), part in zip(jobs, outs):
-        a[s:e] = part
-    return a
-
-
-def make_detector(name, random_state=0):
-    """Exploratory (post-hoc) detector zoo. Returns fit_score(Xtr, Xte) -> (s_tr, s_te),
-    higher = more anomalous for every detector."""
-    if name == 'IF':
-        def fs(tr, te):
-            m = IsolationForest(n_estimators=200, max_samples=min(256, len(tr)),
-                                random_state=random_state, n_jobs=2).fit(tr)
-            return -m.score_samples(tr), -m.score_samples(te)
-    elif name == 'LOF':
-        from sklearn.neighbors import LocalOutlierFactor
-        def fs(tr, te):
-            m = LocalOutlierFactor(n_neighbors=min(20, len(tr) - 1), novelty=True, n_jobs=2).fit(tr)
-            return -m.score_samples(tr), -m.score_samples(te)
-    else:
-        from pyod.models.copod import COPOD
-        from pyod.models.ecod import ECOD
-        from pyod.models.hbos import HBOS
-        cls = {'ECOD': ECOD, 'COPOD': COPOD, 'HBOS': HBOS}[name]
-        def fs(tr, te):
-            m = cls().fit(tr)
-            return m.decision_scores_, m.decision_function(te)
-    return fs
-
-
-def rolling_a(feat, X, fit_score, T=60, step=7, first_after=7):
-    """Same schedule as iforest_a (global model, T-day window, retrain every `step`
-    days) for any detector; a = share of training days scored as less anomalous."""
-    d = feat['d']
-    valid = ~feat['first']
-    a = np.full(len(d), np.nan)
-    d0 = int(d.min())
-    for r in range(d0 + first_after, int(d.max()) + 1, step):
-        tr = valid & (d >= max(d0, r - T)) & (d < r)
-        te = valid & (d >= r) & (d < r + step)
-        if tr.sum() < 25 or te.sum() == 0:
-            continue
-        s_tr, s_te = fit_score(X[tr], X[te])
-        s_tr = np.sort(s_tr)
-        a[te] = np.searchsorted(s_tr, s_te, side='left') / len(s_tr)
-    return a
-
-
 # ---------------------------------------------------------------- risk scoring
-def flags_c(F, thr_scale=None, drop_flags=()):
-    """Binary flags and context score c in [0,1]. thr_scale: {(flag, feature idx): factor}."""
-    thr_scale = thr_scale or {}
-    ks, wsum = {}, 0
-    c = np.zeros(len(F))
-    for name, (w, conds) in FLAGS.items():
-        k = np.zeros(len(F), bool)
-        for fi, t in conds:
-            k |= np.nan_to_num(F[:, fi], nan=-np.inf) >= t * thr_scale.get((name, fi), 1.0)
-        ks[name] = k
-        if name not in drop_flags:
-            c += w * k
-            wsum += w
-    return ks, c / wsum
-
-
-def risk(feat, a, c, w=(0.6, 0.3, 0.1), lam=0.5):
-    """R = wa*a + wc*c + wh*h, h_t = lam*h_{t-1} + (1-lam)*R_{t-1} per user (active days).
-
-    Risk score of models B+RS, D, X3, X4. Locked values after tuning (P2, P3):
-    w = (0.5, 0.4, 0.1), lam = 0.3; alert when R >= 0.55 (D) or 0.60 (X4)."""
+def risk(feat, a, c, w=(0.5, 0.4, 0.1), lam=0.3):
+    """Model Utama: R = 0.5*a + 0.4*c + 0.1*h, h_t = 0.3*h_{t-1} + 0.7*R_{t-1} per user (active days).
+    Other w are used only by the RM2 ablation (without c, without h)."""
     wa, wc, wh = (x / sum(w) for x in w)
     uid, first = feat['uid'], feat['first']
     R = np.full(len(a), np.nan)
@@ -353,9 +225,9 @@ def risk(feat, a, c, w=(0.6, 0.3, 0.1), lam=0.5):
     return R
 
 
-# ---------------------------------------------------------------- relative Set A + calibration (exploratory)
+# ---------------------------------------------------------------- user-relative inputs and per-user ranking
 def relative_A(feat, W=14):
-    """Exploratory (post-hoc): Set A made user-relative and causal.
+    """The 49 daily event-type counts made relative to the user's own history (causal):
     rel[t, k] = log1p(count_t,k) - log1p(median of count_k over the user's previous
     W active days). NaN on the user's first day (no history)."""
     A = feat['A'].astype(np.float64)
@@ -369,8 +241,8 @@ def relative_A(feat, W=14):
 
 
 def calibrate_per_user(feat, a, N=30, M=5):
-    """Exploratory (post-hoc): a_cal = mid-rank of today's a among the user's previous
-    N scored days (strictly before t). With < M previous scores, a_cal = a (fallback)."""
+    """a = mid-rank of today's a among the user's previous
+    N scored days (strictly before t). With < M previous scores, a = a_raw (fallback)."""
     out = a.copy()
     starts = np.flatnonzero(feat['first'])
     for s, e in zip(starts, list(starts[1:]) + [len(a)]):
@@ -385,27 +257,18 @@ def calibrate_per_user(feat, a, N=30, M=5):
     return out
 
 
-# ---------------------------------------------------------------- hybrid (exploratory)
-def hybrid_detect(feat, c, w=(1.0, 0.0, 0.0), lam=0.3, theta=0.6, strict=True, gate=None,
-                  r=1, queue=30, labels=None):
-    """Exploratory (post-hoc) hybrid: Landauer's per-user count-vector detector
-    (detect.py mode 1) supplies a = min L1 distance / limit to the user's queue of
-    up to `queue` daily vectors; R = wa*a + wc*c + wh*h decides the alert, and that
-    decision drives Landauer's retraining and queue updates exactly as detect.py
-    does with its own decision. With w=(1,0,0), theta=0.6, strict=True this is
-    detect.py itself (checked against baseline A).
-
-    gate=(theta_a, theta_c): alert iff a > theta_a and c >= theta_c (instead of R).
-    Returns (status, decision, metrics, a, R).
-    """
-    wa, wc, wh = (x / sum(w) for x in w)
+# ---------------------------------------------------------------- Landauer detector
+def landauer_detect(feat, theta=0.6, r=1, queue=30, labels=None):
+    """Pembanding Landauer (detect.py mode 1): a = min L1 distance / limit between today's 49 counts and the
+    user's queue of up to `queue` daily vectors; alarm if a > theta. The decision drives Landauer's retraining
+    and queue updates exactly as detect.py does (same TP/FP as step 5, check V4).
+    Returns (status, decision, metrics, a)."""
     A = feat['A'].astype(np.float64)    # float64 like detect.py's Python floats (thresholds are exact)
     first, last = feat['first'], feat['last']
     n = len(A)
     status = np.full(n, '', dtype=object)
     dec = np.full(n, '', dtype=object)
     a_out = np.full(n, np.nan)
-    R_out = np.full(n, np.nan)
     i = 0
     while i < n:
         j = i + 1
@@ -413,7 +276,6 @@ def hybrid_detect(feat, c, w=(1.0, 0.0, 0.0), lam=0.3, theta=0.6, strict=True, g
             j += 1
         Q = []                      # user's model: list of count vectors (oldest first)
         wait = r
-        h = 0.0
         for t in range(i, j):
             if last[t]:
                 break               # detect.py never closes the last day
@@ -428,15 +290,7 @@ def hybrid_detect(feat, c, w=(1.0, 0.0, 0.0), lam=0.3, theta=0.6, strict=True, g
                 mi = int(np.argmin(dist))       # first minimum == detect.py's strict '<' scan
                 a = float(dist[mi])
             status[t] = 'detection' if wait <= 0 else 'training'
-            if a is None:
-                alert = False                   # empty model -> normal (as detect.py)
-            elif gate is not None:
-                alert = a > gate[0] and c[t] >= gate[1]
-            else:
-                Rt = wa * a + wc * c[t] + wh * h
-                R_out[t] = Rt
-                h = lam * h + (1 - lam) * Rt
-                alert = Rt > theta if strict else Rt >= theta
+            alert = a is not None and a > theta  # empty model -> normal (as detect.py)
             if a is not None:
                 a_out[t] = a
             if alert:
@@ -453,7 +307,7 @@ def hybrid_detect(feat, c, w=(1.0, 0.0, 0.0), lam=0.3, theta=0.6, strict=True, g
                 Q.pop(0)
         i = j
     m = metrics(feat['uid'], feat['d'], status, dec, labels) if labels is not None else None
-    return status, dec, m, a_out, R_out
+    return status, dec, m, a_out
 
 
 # ---------------------------------------------------------------- evaluation
@@ -516,10 +370,3 @@ def metrics(uid, d, status, dec, labels):
                 TPR=div(c['tp'], c['tp'] + c['fn']), TPR_adj=div(c['tp_adj'], c['tp_adj'] + c['fn_adj']),
                 FPR=div(c['fp'], c['fp'] + c['tn']), Prec=div(c['tp_adj'], c['tp_adj'] + c['fp']),
                 R=div(c['train'], c['train'] + c['detect']), alerts=alerts, alerts_per_day=alerts / 1910)
-
-
-def pr_auc(feat, score, labels):
-    from sklearn.metrics import average_precision_score
-    ok = ~feat['first'] & ~feat['last'] & ~np.isnan(score)
-    y = np.array([labels.get(u) == dd for u, dd in zip(feat['uid'][ok], feat['d'][ok])])
-    return float(average_precision_score(y, score[ok])) if y.any() else float('nan')

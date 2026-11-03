@@ -1,0 +1,116 @@
+{
+ "V5": {
+  "users": 100,
+  "values_changed_on_or_before_t": {
+   "F1..F8": 0,
+   "relative counts": 0,
+   "trans_js": 0,
+   "a": 0
+  },
+  "values_changed_after_t (should be > 0)": {
+   "F1..F8": 34785,
+   "relative counts": 36592,
+   "trans_js": 10913,
+   "a": 11798
+  },
+  "pass": true
+ },
+ "V6": {
+  "n_columns_isolation_forest": 57,
+  "columns_isolation_forest": [
+   "rel_admin_settings_changed",
+   "rel_app_disabled",
+   "rel_app_enabled",
+   "rel_command_executed",
+   "rel_comment_added",
+   "rel_comment_deleted",
+   "rel_deleted_from_trashbin",
+   "rel_email_changed",
+   "rel_file_accessed",
+   "rel_file_copied",
+   "rel_file_created",
+   "rel_file_deleted",
+   "rel_file_renamed",
+   "rel_file_updated",
+   "rel_file_written",
+   "rel_fullname_changed",
+   "rel_group_created",
+   "rel_group_deleted",
+   "rel_groupadmin_removed_from_group",
+   "rel_login_attempt",
+   "rel_login_failed",
+   "rel_login_successful",
+   "rel_logout_occured",
+   "rel_password_changed",
+   "rel_permission_changed",
+   "rel_public_share_accessed",
+   "rel_public_share_expiration_date_changed",
+   "rel_public_share_password_changed",
+   "rel_public_share_update_permission",
+   "rel_quota_changed",
+   "rel_restored_from_trashbin",
+   "rel_shared_email",
+   "rel_shared_group",
+   "rel_shared_link",
+   "rel_shared_user",
+   "rel_unshared_email",
+   "rel_unshared_group",
+   "rel_unshared_link",
+   "rel_unshared_user",
+   "rel_user_added_to_group",
+   "rel_user_assign",
+   "rel_user_became_groupadmin",
+   "rel_user_created",
+   "rel_user_data_viewed",
+   "rel_user_deleted",
+   "rel_user_disabled",
+   "rel_user_removed_from_group",
+   "rel_version_deleted",
+   "rel_version_restored",
+   "F1_vol_z",
+   "F2_type_js",
+   "F3_new_type_share",
+   "F4_off_hours",
+   "F5_span_z",
+   "F6_new_prefix_share",
+   "F7_sens_excess",
+   "F8_burst_z"
+  ],
+  "columns_flags": [
+   "F1_vol_z",
+   "F2_type_js",
+   "F3_new_type_share",
+   "F4_off_hours",
+   "F5_span_z",
+   "F6_new_prefix_share",
+   "F7_sens_excess",
+   "F8_burst_z",
+   "trans_js"
+  ],
+  "banned_present": [],
+  "pass": true
+ },
+ "V7": {
+  "F": {
+   "rows": 83147,
+   "run1_eq_run2": true,
+   "eq_step12": true
+  },
+  "trans_js": {
+   "rows": 83147,
+   "run1_eq_run2": true,
+   "eq_step12": true
+  },
+  "a_raw": {
+   "rows": 83147,
+   "run1_eq_run2": true,
+   "eq_step12": true
+  },
+  "a": {
+   "rows": 83147,
+   "run1_eq_run2": true,
+   "eq_step12": true
+  },
+  "pass": true
+ }
+}

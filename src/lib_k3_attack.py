@@ -1,10 +1,9 @@
-"""LIBRARY: K3 session-hijack attack generator (Tests 2, 3, 3b).
+"""LIBRARY: session-hijack attack generator (scenario "pembajakan sesi", used by step 12).
   plan_attacks()  : 20 victims, attack day, start time and duration per seed
   attack_events() : the injected events for one victim and one intensity
 
 ------------------------------------------------------------------------
-K3 (M7 session hijack) attack generator, as fixed in docs/SPEC_K3_window.md
-(approved 2026-10-24, before any K3 result).
+Session-hijack generator; the rules below were fixed before any hijack result was seen.
 
 Per seed: 20 victims drawn at random from the 174 users meeting Landauer's victim rules
 (users with fewer than 30 active days are skipped: the day rule leaves them no attack day); attack day =

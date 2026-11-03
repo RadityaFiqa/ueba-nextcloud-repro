@@ -6,8 +6,10 @@
 # Run from the repository root after steps 01-04:  bash src/step12_final.sh
 set -e
 PY=${PY:-python}
+RES=${RESULTS_DIR:-results}
+mkdir -p "$RES"
 $PY -W ignore src/step12_final_prep.py T
-$PY -W ignore src/step12_final_prep.py A > results/final_prep_A.log 2>&1 &
-$PY -W ignore src/step12_final_prep.py B > results/final_prep_B.log 2>&1 &
-wait
-$PY -W ignore src/step12_final_eval.py | tee results/final_eval.log
+$PY -W ignore src/step12_final_prep.py A > "$RES/final_prep_A.log" 2>&1 &
+$PY -W ignore src/step12_final_prep.py B > "$RES/final_prep_B.log" 2>&1 &
+wait %1 && wait %2  # stop here if a preparation part failed
+$PY -W ignore src/step12_final_eval.py | tee "$RES/final_eval.log"

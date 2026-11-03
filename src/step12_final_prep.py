@@ -5,7 +5,7 @@ evaluation (step12_final_eval.py) needs, as work/final/<name>.npz:
   * day index: uid, d, first, last
   * F1..F8 and trans_js (flags are computed in the evaluation)
   * a_raw (global IF percentile on the 57 user-relative inputs) and a (ranked against the user's previous 30 days)
-  * Landauer's detector (nearest-day distance, lib.hybrid_detect w=(1,0,0)) at several thresholds:
+  * Landauer's detector (nearest-day distance, lib.landauer_detect) at several thresholds:
     alarm and training-status masks per threshold
   * seed 1 only: a for the ablations (IF refitted without one feature group, without the 49 relative counts,
     or with raw log counts instead of relative counts)
@@ -58,14 +58,14 @@ if not os.path.exists(TRANS):  # per (uid, day): counts of consecutive event-typ
     con.close()
 if PART == 'T':  # only build the transitions table (run once before parts A and B)
     sys.exit(0)
-core.init(BASE, TYPES, TRANS)
+core.init(TYPES, TRANS)
 ELIG = k3.eligible_users()
 W30 = k3.win30_counts(ELIG)
 ALL_PREFIX = sorted({p for days in BASE.values() for r in days.values() for p in r.pref})
 CLEAN = lib.relabel(BASE, {}, {})
 
 
-def inject(rec, events):  # as step09
+def inject(rec, events):  # add the hijack session's events to the victim's day
     n = lib.Rec()
     n.d = rec.d
     n.types, n.hist = rec.types.copy(), rec.hist.copy()
@@ -106,7 +106,7 @@ def build(kind, s, lv):
 
 
 def if_a(f, X):
-    a_raw = lib.iforest_a(f, np.nan_to_num(X.astype(np.float32)), schedule='rolling')
+    a_raw = lib.iforest_a(f, np.nan_to_num(X.astype(np.float32)))
     return a_raw, lib.calibrate_per_user(f, a_raw)
 
 
@@ -115,14 +115,12 @@ for kind, s, lv in JOBS[PART]:
     name = f'{kind}_s{s}' + (f'_{lv}' if lv else '')
     recs, pairs, ct, trans, lab = build(kind, s, lv)
     f = lib.compute_features(recs, W=W)
-    E = core.extra_features(f, recs, pairs, ct, peer=False, trans=trans)
     rel = lib.relative_A(f, W=W)
     a_raw, a = if_a(f, np.hstack([rel, f['F']]))
-    out = dict(uid=np.asarray(f['uid'], dtype=str), d=f['d'], first=f['first'], last=f['last'], F=f['F'], trans_js=E[:, 3],
+    out = dict(uid=np.asarray(f['uid'], dtype=str), d=f['d'], first=f['first'], last=f['last'], F=f['F'], trans_js=core.trans_js(BASE, recs, pairs, ct, trans),
                a_raw=a_raw, a=a, lab_u=np.array(list(lab), dtype=str), lab_d=np.array(list(lab.values())))
-    _, c0 = lib.flags_c(f['F'])
     for th in L_TH:
-        st, dc = lib.hybrid_detect(f, c0, w=(1, 0, 0), theta=th, labels=lab)[:2]
+        st, dc = lib.landauer_detect(f, theta=th, labels=lab)[:2]
         out[f'L_alarm_{th}'] = dc == 'anomalous'
         out[f'L_train_{th}'] = st == 'training'
     if s == 1:
@@ -132,6 +130,6 @@ for kind, s, lv in JOBS[PART]:
         out['a_tanpa_jumlah_relatif'] = if_a(f, f['F'])[1]
         out['a_jumlah_mentah'] = if_a(f, np.hstack([np.log1p(f['A'].astype(np.float64)), f['F']]))[1]
     np.savez_compressed(os.path.join(OUT_DIR, name + '.npz'), **out)
-    del recs, f, E, rel, out
+    del recs, f, rel, out
     log(f'{name}: {time.time() - t:.0f}s')
 log('PREP_DONE')

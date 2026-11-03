@@ -14,7 +14,7 @@ import time
 
 import numpy as np
 
-import lib_models as lib  # features F1-F8, models B/C/D/X4, Landauer detector, evaluator
+import lib_models as lib  # Landauer detector and evaluator
 
 t = time.time()
 base, types = lib.load_base(config.BASE)

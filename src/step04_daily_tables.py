@@ -1,6 +1,5 @@
-"""STEP 4 - DATA: per user-day tables used by every model except A
-(B, B+RS, C, D, X1-X4, hybrid) and by the K3 tests.
-Also defines SENSITIVE, the list of sensitive actions (feature F7, flag k5, K3 context).
+"""STEP 4 - DATA: per user-day tables used by step 12 (all three models) and by the session-hijack generator.
+Also defines SENSITIVE, the list of sensitive actions (feature F7, flag k5).
   Input : work/events.parquet
   Output: work/base/{types,daystat,hist,prefix}.parquet
   Run   : python src/step04_daily_tables.py work/events.parquet work/base
